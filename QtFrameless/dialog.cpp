@@ -2,7 +2,7 @@
 #include "ui_dialog.h"
 
 Dialog::Dialog(QWidget *parent) :
-    ShadowBaseDialog(parent),
+    QDialog(parent),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);

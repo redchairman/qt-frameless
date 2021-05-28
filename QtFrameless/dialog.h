@@ -7,7 +7,7 @@ namespace Ui {
 class Dialog;
 }
 
-class Dialog : public ShadowBaseDialog
+class Dialog : public QDialog
 {
     Q_OBJECT
 
