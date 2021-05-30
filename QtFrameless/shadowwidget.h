@@ -16,72 +16,7 @@
 #include <QWidget>
 #include <QDialog>
 class QPainter;
-class QLineEdit;
-class QLabel;
 
-class Skin9GridImage
-{
-protected:
-    QImage m_img;
-    QRect m_arrayImageGrid[9];
-    //
-    bool clear();
-public:
-    static bool splitRect(const QRect& rcSrc, QPoint ptTopLeft, QRect* parrayRect, int nArrayCount);
-//    bool setImage(const CString& strImageFileName, QPoint ptTopLeft);
-    bool setImage(const QImage& image, QPoint ptTopLeft);
-//    //
-//    void draw(QPainter* p, QRect rc, int nAlpha) const;
-    void drawBorder(QPainter* p, QRect rc) const;
-//    bool valid() const;
-//    //
-//    QSize actualSize() const { return m_img.size(); }
-};
-
-class ShadowWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit ShadowWidget(QWidget *parent = nullptr);
-
-    virtual void paintEvent(QPaintEvent *e);
-
-    void setShadowSize(int shadowSize);
-    int shadowSize();
-    void hideShadow();
-    void showShadow();
-
-private:
-    Skin9GridImage* m_shadow;
-    int m_shadowSize;
-
-};
-
-//class ShadowBaseWidget : public QWidget
-//{
-//public:
-//    explicit ShadowBaseWidget(int shadowSize, QWidget *parent = nullptr);
-
-//    QWidget* clientWidget()
-//    {
-//        return shadowClientWidget;
-//    }
-//private:
-//    QWidget* shadowClientWidget;
-//};
-
-//class ShadowBaseDialog : public QDialog
-//{
-//public:
-//    explicit ShadowBaseDialog(int shadowSize, QWidget *parent = nullptr);
-
-//    QWidget* clientWidget()
-//    {
-//        return shadowClientWidget;
-//    }
-//private:
-//    QWidget* shadowClientWidget;
-//};
 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -114,28 +49,36 @@ private:
       HMODULE dwmapi_dll_;
 };
 
-class WinAPIShadowWidget : public QWidget
+class WinDwmShadow
 {
-    Q_OBJECT
 public:
-    explicit WinAPIShadowWidget(QWidget *parent = nullptr);
-
-    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-
-public slots:
+    explicit WinDwmShadow(QWidget *w);
+private:
+    QWidget *m_widget;
 };
-
-class WinAPIShadowDialog : public QDialog
-{
-    Q_OBJECT
-public:
-    explicit WinAPIShadowDialog(QWidget *parent = nullptr);
-
-    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-
-public slots:
-};
-
 #endif
+
+class ShadowImage : public QObject
+{
+    Q_OBJECT
+public:
+    explicit ShadowImage(QWidget* w, int shadowSize = 10, QObject *parent = 0);
+    ~ShadowImage();
+    void setShadowSize(int shadowSize);
+    void paint(QPainter* p);
+    int shadowSize();
+
+public slots:
+    void hide();
+    void show();
+private:
+    int m_shadowSize;
+    QImage m_img;
+    QRect m_arrayImageGrid[9];
+    QColor m_borderColor;
+    QColor m_bgColor;
+    QWidget *m_widget;
+    bool m_show;
+};
 
 #endif // MAKEPIXMAPWIDGET_H

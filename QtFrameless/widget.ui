@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="pushButton_widget_shadow">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>120</y>
+     <x>210</x>
+     <y>30</y>
      <width>161</width>
      <height>51</height>
     </rect>
@@ -30,22 +30,22 @@ ShadowWidget</string>
   <widget class="QPushButton" name="pushButton_widget_dwm">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>120</y>
+     <x>390</x>
+     <y>30</y>
      <width>161</width>
      <height>51</height>
     </rect>
    </property>
    <property name="text">
     <string>Widget
-Dwm API</string>
+Dwm Shadow</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_dialog_dwm">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>230</y>
+     <x>410</x>
+     <y>120</y>
      <width>161</width>
      <height>51</height>
     </rect>
@@ -58,8 +58,8 @@ Dwm API</string>
   <widget class="QPushButton" name="pushButton_dialog_shadow">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>230</y>
+     <x>200</x>
+     <y>130</y>
      <width>161</width>
      <height>51</height>
     </rect>
@@ -67,6 +67,34 @@ Dwm API</string>
    <property name="text">
     <string>Dialog
 ShadowWidget</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_widget_noshadow">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>30</y>
+     <width>161</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Widget
+ No Shadow</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_dialog_noshadow">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>140</y>
+     <width>161</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Dialog
+No Shadow</string>
    </property>
   </widget>
  </widget>

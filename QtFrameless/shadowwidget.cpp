@@ -32,16 +32,6 @@ QImage MakeShadowImage(int shadowSize, bool activated)
     QImage image(size, size, QImage::Format_ARGB32);
     image.fill(QColor(Qt::black));
 
-    int borderR = 165;
-    int borderG = 165;
-    int borderB = 165;
-    //
-    if (activated) {
-        borderR = 209;
-        borderG = 209;
-        borderB = 209;
-    }
-
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
     image.setColor(0, qRgba(borderR, borderG, borderB, 255));
     QMap<int, int> alphaColorMap;
@@ -144,6 +134,7 @@ QImage MakeShadowImage(int shadowSize, bool activated)
 #endif
         }
     }
+
     //
     int parentRoundSize = 3;
     //
@@ -174,6 +165,7 @@ QImage MakeShadowImage(int shadowSize, bool activated)
 #endif
         }
     }
+
     //
     for (int x = szImage.width() - shadowSize - parentRoundSize; x < szImage.width(); x++) {
         for (int y = 0; y < shadowSize + parentRoundSize; y++) {
@@ -258,68 +250,10 @@ QImage MakeShadowImage(int shadowSize, bool activated)
 #endif
         }
     }
-    //
-
-    //
-    int borderSize = 1;
-    //left
-    for (int i = 0; i < borderSize; i++) {
-        for (int y = shadowSize - 1; y < szImage.height() - shadowSize + 1; y++) {
-            int x = shadowSize - i - 1;
-#if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            image.setPixel(x, y, 0);
-#else
-            image.setPixelColor(x, y, QColor(borderR, borderG, borderB, 255));
-#endif
-        }
-    }
-    //right
-    for (int i = 0; i < borderSize; i++) {
-        for (int y = shadowSize - 1; y < szImage.height() - shadowSize + 1; y++) {
-            int x = szImage.width() - shadowSize - 1 + i + 1;
-#if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            image.setPixel(x, y, 0);
-#else
-            image.setPixelColor(x, y, QColor(borderR, borderG, borderB, 255));
-#endif
-        }
-    }
-    //top
-    for (int i = 0; i < borderSize; i++) {
-        for (int x = shadowSize; x < szImage.width() - shadowSize; x++) {
-            int y = shadowSize - i - 1;
-#if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            image.setPixel(x, y, 0);
-#else
-            image.setPixelColor(x, y, QColor(borderR, borderG, borderB, 255));
-#endif
-        }
-    }
-    //bottom
-    for (int i = 0; i < borderSize; i++) {
-        for (int x = shadowSize; x < szImage.width() - shadowSize; x++) {
-            int y = szImage.height() - shadowSize - 1 + i + 1;
-
-#if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            image.setPixel(x, y, 0);
-#else
-            image.setPixelColor(x, y, QColor(borderR, borderG, borderB, 255));
-#endif
-        }
-    }
-    //
     return image;
 }
 
-bool Skin9GridImage::clear()
-{
-    if (!m_img.isNull()) {
-        m_img = QImage();
-    }
-    return true;
-}
-
-bool Skin9GridImage::splitRect(const QRect &rcSrc, QPoint ptTopLeft, QRect *parrayRect, int nArrayCount)
+bool SplitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArrayCount)
 {
     Q_ASSERT(nArrayCount == 9);
     //
@@ -328,171 +262,124 @@ bool Skin9GridImage::splitRect(const QRect &rcSrc, QPoint ptTopLeft, QRect *parr
     int nWidth = rcSrc.width();
     int nHeight = rcSrc.height();
     //
-    if (ptTopLeft.x() <= 0)
-        return false;
-    if (ptTopLeft.y() <= 0)
-        return false;
-    if (ptTopLeft.x() >= nWidth / 2)
-        return false;
-    if (ptTopLeft.y() >= nHeight / 2)
-        return false;
+//    if (ptTopLeft.x() <= 0)
+//        return false;
+//    if (ptTopLeft.y() <= 0)
+//        return false;
+//    if (ptTopLeft.x() >= nWidth / 2)
+//        return false;
+//    if (ptTopLeft.y() >= nHeight / 2)
+//        return false;
     //
     int x1 = rcSrc.left() + 0;
-    int x2 = rcSrc.left() + ptTopLeft.x();
-    int x3 = rcSrc.left() + nWidth - ptTopLeft.x();
-    int x4 = rcSrc.left() + nWidth;
+    int x2 = rcSrc.left() + shadowSize;
+    int x3 = rcSrc.left() + nWidth - shadowSize;
     //
     int y1 = rcSrc.top() + 0;
-    int y2 = rcSrc.top() + ptTopLeft.y();
-    int y3 = rcSrc.top() + nHeight - ptTopLeft.y();
-    int y4 = rcSrc.top() + nHeight;
+    int y2 = rcSrc.top() + shadowSize;
+    int y3 = rcSrc.top() + nHeight - shadowSize;
     //
-    arrayRect[0] = QRect(QPoint(x1, y1), QPoint(x2, y2));
-    arrayRect[1] = QRect(QPoint(x2 + 1, y1), QPoint(x3, y2));
-    arrayRect[2] = QRect(QPoint(x3 + 1, y1), QPoint(x4, y2));
+    arrayRect[0] = QRect(x1, y1, shadowSize, shadowSize);
+    arrayRect[1] = QRect(x2, y1, nWidth - shadowSize * 2, shadowSize);
+    arrayRect[2] = QRect(x3, y1, shadowSize, shadowSize);
 
-    arrayRect[3] = QRect(QPoint(x1, y2 + 1), QPoint(x2, y3));
-    arrayRect[4] = QRect(QPoint(x2 + 1, y2 + 1), QPoint(x3, y3));
-    arrayRect[5] = QRect(QPoint(x3 + 1, y2 + 1), QPoint(x4, y3));
+    arrayRect[3] = QRect(x1, y2, shadowSize, nHeight - shadowSize * 2);
+    arrayRect[4] = QRect(x2, y2, nWidth - shadowSize * 2, nHeight - shadowSize * 2);
+    arrayRect[5] = QRect(x3, y2, shadowSize, nHeight - shadowSize * 2);
 
-    arrayRect[6] = QRect(QPoint(x1, y3 + 1), QPoint(x2, y4));
-    arrayRect[7] = QRect(QPoint(x2 + 1, y3 + 1), QPoint(x3, y4));
-    arrayRect[8] = QRect(QPoint(x3 + 1, y3 + 1), QPoint(x4, y4));
+    arrayRect[6] = QRect(x1, y3, shadowSize, shadowSize);
+    arrayRect[7] = QRect(x2, y3, nWidth - shadowSize * 2, shadowSize);
+    arrayRect[8] = QRect(x3, y3, shadowSize, shadowSize);
     //
     return true;
 }
 
-bool Skin9GridImage::setImage(const QImage &image, QPoint ptTopLeft)
+ShadowImage::ShadowImage(QWidget* w, int shadowSize, QObject *parent)
+    : QObject(parent)
+    , m_shadowSize(shadowSize)
+    , m_widget(w)
+    , m_show(true)
 {
-    clear();
-    //
-    m_img = image;
-    //
-    int nImageWidth = m_img.width();
-    int nImageHeight = m_img.height();
-    //
-    return splitRect(QRect(0, 0, nImageWidth, nImageHeight), ptTopLeft, m_arrayImageGrid, 9);
+    m_widget->setAttribute(Qt::WA_TranslucentBackground);
+    //m_widget->setWindowFlags(m_widget->windowFlags() | Qt::FramelessWindowHint);
+    m_bgColor = m_widget->palette().color(QPalette::Window);
+    m_borderColor = QColor(209, 209, 209);
+    setShadowSize(m_shadowSize);
 }
 
-void Skin9GridImage::drawBorder(QPainter *p, QRect rc) const
+ShadowImage::~ShadowImage()
 {
-    QRect arrayDest[9];
-    //
-    splitRect(rc, m_arrayImageGrid[0].bottomRight(), arrayDest, 9);
-    //
-    for (int i = 0; i < 9; i++) {
-        if (i == 4)
-            continue;
-        //
-        const QRect& rcSrc = m_arrayImageGrid[i];
-        const QRect& rcDest = arrayDest[i];
-        //
-        p->drawImage(rcDest, m_img, rcSrc);
-    }
+
 }
 
-
-ShadowWidget::ShadowWidget(QWidget *parent)
-    : QWidget(parent)
-    , m_shadow(new Skin9GridImage())
-{
-    setAttribute(Qt::WA_TranslucentBackground);
-    //setWindowFlag(Qt::FramelessWindowHint);
-    setMouseTracking(true);
-    //
-//    QImage image = MakeShadowImage(shadowSize, true);
-//    m_shadow->setImage(image, QPoint(shadowSize + 1, shadowSize + 1));
-}
-
-void ShadowWidget::setShadowSize(int shadowSize)
+void ShadowImage::setShadowSize(int shadowSize)
 {
     m_shadowSize = shadowSize;
-    QImage image = MakeShadowImage(shadowSize, true);
-    m_shadow->setImage(image, QPoint(shadowSize + 1, shadowSize + 1));
-    showShadow();
+    if (!m_img.isNull()) {
+        m_img = QImage();
+    }
+    m_img = MakeShadowImage(m_shadowSize, true);
+
+    int nImageWidth = m_img.width();
+    int nImageHeight = m_img.height();
+    SplitRect(QRect(0, 0, nImageWidth, nImageHeight), shadowSize, m_arrayImageGrid, 9);
 }
 
-int ShadowWidget::shadowSize()
+void ShadowImage::paint(QPainter *p)
+{
+    p->save();
+    if (m_shadowSize > 0 && m_show)
+    {
+        QRect arrayDest[9];
+        SplitRect(m_widget->rect(), m_shadowSize, arrayDest, 9);
+        for (int i = 0; i < 9; i++) {
+            if (i == 4)
+            {
+                p->setBrush(m_bgColor);
+                //QRect rc0 = arrayDest[i];
+                QRect rc1 = arrayDest[i].marginsRemoved(QMargins(0, 0, 1, 1));
+                p->setPen(QPen(m_borderColor, 1));
+                p->drawRect(rc1);
+            }
+            else
+            {
+                const QRect& rcSrc = m_arrayImageGrid[i];
+                const QRect& rcDest = arrayDest[i];
+                p->drawImage(rcDest, m_img, rcSrc);
+            }
+        }
+    }
+    else
+    {
+        p->setBrush(m_bgColor);
+        p->setPen(Qt::NoPen);
+        p->drawRect(m_widget->rect());
+    }
+    p->restore();
+}
+
+int ShadowImage::shadowSize()
 {
     return m_shadowSize;
 }
 
-void ShadowWidget::hideShadow()
+void ShadowImage::hide()
 {
-    QLayout* lay = layout();
+    m_show = false;
+    QLayout* lay = m_widget->layout();
     if (lay)
         lay->setContentsMargins(0, 0, 0, 0);
 }
 
-void ShadowWidget::showShadow()
+void ShadowImage::show()
 {
-    QLayout* lay = layout();
+    m_show = true;
+    QLayout* lay = m_widget->layout();
     if (lay)
         lay->setContentsMargins(m_shadowSize, m_shadowSize, m_shadowSize, m_shadowSize);
 }
 
-void ShadowWidget::paintEvent(QPaintEvent *e)
-{
-    Q_UNUSED(e)
-    QPainter painter(this);
-    m_shadow->drawBorder(&painter, rect());
-}
-
-//ShadowBaseWidget::ShadowBaseWidget(int shadowSize, QWidget *parent)
-//    : QWidget(parent)
-//{
-//    resize(800, 600);
-//    setAttribute(Qt::WA_TranslucentBackground);
-////    setWindowFlags(Qt::FramelessWindowHint);
-//    setContentsMargins(0, 0, 0, 0);
-
-//    QVBoxLayout *pLayout = new QVBoxLayout(this);
-//    pLayout->setContentsMargins(0, 0, 0, 0);
-//    pLayout->setSpacing(0);
-//    ShadowWidget *pShadowWidget = new ShadowWidget(this);
-//    pShadowWidget->setShadowSize(shadowSize);
-//    pShadowWidget->setContentsMargins(shadowSize, shadowSize, shadowSize, shadowSize);
-//    pLayout->addWidget(pShadowWidget);
-
-//    QLayout* rootLayout = new QBoxLayout(QBoxLayout::TopToBottom);
-//    pShadowWidget->setLayout(rootLayout);
-//    rootLayout->setContentsMargins(0, 0, 0, 0);
-//    rootLayout->setSpacing(0);
-
-//    shadowClientWidget = new QWidget(pShadowWidget);
-//    shadowClientWidget->setAutoFillBackground(true);
-//    rootLayout->addWidget(shadowClientWidget);
-//}
-
-//ShadowBaseDialog::ShadowBaseDialog(int shadowSize, QWidget *parent)
-//    : QDialog(parent)
-//{
-//    resize(800, 600);
-// //   setAttribute(Qt::WA_TranslucentBackground);
-////    setWindowFlags(Qt::FramelessWindowHint);
-//    setContentsMargins(0, 0, 0, 0);
-
-//    QVBoxLayout *pLayout = new QVBoxLayout(this);
-//    pLayout->setContentsMargins(0, 0, 0, 0);
-//    pLayout->setSpacing(0);
-//    ShadowWidget *pShadowWidget = new ShadowWidget(this);
-//    pShadowWidget->setShadowSize(shadowSize);
-//    pShadowWidget->setContentsMargins(shadowSize, shadowSize, shadowSize, shadowSize);
-//    pLayout->addWidget(pShadowWidget);
-
-//    QLayout* rootLayout = new QBoxLayout(QBoxLayout::TopToBottom);
-//    pShadowWidget->setLayout(rootLayout);
-//    rootLayout->setContentsMargins(0, 0, 0, 0);
-//    rootLayout->setSpacing(0);
-
-//    shadowClientWidget = new QWidget(pShadowWidget);
-//    shadowClientWidget->setAutoFillBackground(true);
-//    rootLayout->addWidget(shadowClientWidget);
-//}
-
-
 #ifdef Q_OS_WIN32
-
 WinDwmapi::WinDwmapi()
     : dwmapi_dll_(LoadLibraryW(L"dwmapi.dll"))
     , dwm_is_composition_enabled_(NULL)
@@ -537,63 +424,18 @@ const WinDwmapi *WinDwmapi::instance()
 }
 
 #pragma comment(lib, "user32.lib")
-WinAPIShadowWidget::WinAPIShadowWidget(QWidget *parent)
-    : QWidget(parent)
+WinDwmShadow::WinDwmShadow(QWidget *w)
+    : m_widget(w)
 {
-    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
-    HWND hwnd = (HWND)this->winId();
+    m_widget->setWindowFlags(m_widget->windowFlags() | Qt::FramelessWindowHint);
+    HWND hwnd = (HWND)m_widget->winId();
     DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
 
     // 此行代码可以带回Aero效果，同时也带回了标题栏和边框,在nativeEvent()会再次去掉标题栏
     ::SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION);
     //we better left 1 piexl width of border untouch, so OS can draw nice shadow around it
     const MARGINS shadow = { 1, 1, 1, 1 };
-    WinDwmapi::instance()->DwmExtendFrameIntoClientArea(HWND(winId()), &shadow);
-}
-
-bool WinAPIShadowWidget::nativeEvent(const QByteArray &eventType, void *message, long *result)
-{
-    MSG* msg = (MSG *)message;
-    switch (msg->message)
-    {
-    case WM_NCCALCSIZE:
-    {
-        // this kills the window frame and title bar we added with WS_THICKFRAME and WS_CAPTION
-        *result = 0;
-        return true;
-    }
-    default:
-        return QWidget::nativeEvent(eventType, message, result);
-    }
-}
-
-WinAPIShadowDialog::WinAPIShadowDialog(QWidget *parent)
-    : QDialog(parent)
-{
-    setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::Dialog);
-    HWND hwnd = (HWND)this->winId();
-    DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
-
-    // 此行代码可以带回Aero效果，同时也带回了标题栏和边框,在nativeEvent()会再次去掉标题栏
-    ::SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION);
-    //we better left 1 piexl width of border untouch, so OS can draw nice shadow around it
-    const MARGINS shadow = { 1, 1, 1, 1 };
-    WinDwmapi::instance()->DwmExtendFrameIntoClientArea(HWND(winId()), &shadow);
-}
-
-bool WinAPIShadowDialog::nativeEvent(const QByteArray &eventType, void *message, long *result)
-{
-    MSG* msg = (MSG *)message;
-    switch (msg->message)
-    {
-    case WM_NCCALCSIZE:
-    {
-        // this kills the window frame and title bar we added with WS_THICKFRAME and WS_CAPTION
-        *result = 0;
-        return true;
-    }
-    default:
-        return QDialog::nativeEvent(eventType, message, result);
-    }
+    WinDwmapi::instance()->DwmExtendFrameIntoClientArea(HWND(m_widget->winId()), &shadow);
 }
 #endif
+

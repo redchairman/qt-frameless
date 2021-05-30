@@ -1,10 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
-#include "testdialog.h"
-#include "testwidget1.h"
-#include "dialog.h"
-#include "dialog2.h"
-#include "widget2.h"
+#include "demodialog.h"
+#include "demowidget.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -19,28 +16,41 @@ Widget::~Widget()
 }
 
 
+void Widget::on_pushButton_widget_noshadow_clicked()
+{
+    DemoWidget *widget = new DemoWidget(0);
+    widget->setWindowModality(Qt::ApplicationModal);//设置窗体模态，要求该窗体没有父类，否则无效
+    widget->show();
+}
+
 void Widget::on_pushButton_widget_shadow_clicked()
 {
-    TestWidget1 *widget = new TestWidget1();
+    DemoWidget *widget = new DemoWidget(1);
     widget->setWindowModality(Qt::ApplicationModal);//设置窗体模态，要求该窗体没有父类，否则无效
     widget->show();
 }
 
 void Widget::on_pushButton_widget_dwm_clicked()
 {
-    Widget2 *widget = new Widget2();
+    DemoWidget *widget = new DemoWidget(2);
     widget->setWindowModality(Qt::ApplicationModal);//设置窗体模态，要求该窗体没有父类，否则无效
     widget->show();
 }
 
+void Widget::on_pushButton_dialog_noshadow_clicked()
+{
+    DemoDialog *widget = new DemoDialog(0, this);
+    widget->exec();
+}
+
 void Widget::on_pushButton_dialog_shadow_clicked()
 {
-    Dialog *widget = new Dialog(this);
+    DemoDialog *widget = new DemoDialog(1, this);
     widget->exec();
 }
 
 void Widget::on_pushButton_dialog_dwm_clicked()
 {
-    Dialog2 *widget = new Dialog2(this);
+    DemoDialog *widget = new DemoDialog(2, this);
     widget->exec();
 }
