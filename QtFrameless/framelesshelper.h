@@ -100,6 +100,7 @@ public:
 #ifdef Q_OS_WIN
     LRESULT calculateBorder(const QPoint &pt);
 #endif
+    void updateMaxIcon();
 signals:
     void sigShowDrawShadow();
     void sigHideDrawShadow();

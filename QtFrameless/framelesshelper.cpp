@@ -499,12 +499,13 @@ void FramelessHelper::handleMouseMoveEvent(QMouseEvent *event)
                     QPoint pt_new(m_rcNormal.left() + event->globalPos().x() - old_x, m_rcNormal.top() + event->globalPos().y() - old_y);
                     m_rcNormal.moveTopLeft(pt_new);
                     //m_pWidget->setGeometry(m_rcNormal);
+                    handleMaxRestore();
+                    m_pWidget->move(pt_new);
                 }
                 else{
-
+                    handleMaxRestore();
                 }
 
-                handleMaxRestore();
                 m_ptDragPos = event->globalPos() - m_pWidget->frameGeometry().topLeft();
                 m_bMoveing = true;
             }
@@ -551,7 +552,7 @@ void FramelessHelper::handleMin()
 
 void FramelessHelper::handleMaxRestore()
 {
-#if 0 //def Q_OS_WIN32
+#ifdef Q_OS_WIN32
     if (m_pWidget->isMaximized())
     {
         emit sigShowDrawShadow();
@@ -563,7 +564,8 @@ void FramelessHelper::handleMaxRestore()
         emit sigHideDrawShadow();
         m_rcNormal = m_pWidget->geometry();
         int screenIndex = getScreenIndex();
-        if (screenIndex == 0){
+        if (1)//screenIndex == 0)
+        {
             m_pWidget->showMaximized();
             m_pWidget->setWindowState(Qt::WindowMaximized);
         }else{
@@ -585,16 +587,22 @@ void FramelessHelper::handleMaxRestore()
         emit sigHideDrawShadow();
         m_rcNormal = m_pWidget->geometry();
         int screenIndex = getScreenIndex();
-        m_pWidget->setGeometry(qApp->desktop()->availableGeometry(screenIndex));
+        QRect rc = qApp->desktop()->availableGeometry(screenIndex);
+        m_pWidget->setGeometry(rc);
         m_bMax = true;
     }
 
 #endif
+    updateMaxIcon();
+    return;
+}
+
+void FramelessHelper::updateMaxIcon()
+{
     if (m_pMaxButton && m_iconCtrl)
     {
         m_iconCtrl->setIcon(isMax() ? FramelessIconCtrl::Button_Restore : FramelessIconCtrl::Button_MaxSize, m_pMaxButton);
     }
-    return;
 }
 
 bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -673,10 +681,11 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
             m_pWidget->setContentsMargins(0, 0, 0, 0);
             m_bMax = false;
         }
+        updateMaxIcon();
         *result = ::DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
         return true;
-        }
-        break;
+    }
+    break;
 
     default:
         return false;
