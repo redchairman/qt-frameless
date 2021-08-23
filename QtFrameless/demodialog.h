@@ -2,7 +2,6 @@
 #define DEMODIALOG_H
 
 #include <QDialog>
-#include "shadowwidget.h"
 #include "framelesswidget.h"
 
 namespace Ui {

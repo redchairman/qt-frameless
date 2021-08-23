@@ -13,4 +13,8 @@ public:
     virtual void setIcon(FramelessIconCtrl::ButtonType type, QAbstractButton* button);
 };
 
+
+
+
+
 #endif // MYFRAMELESSICONCTRL_H

@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include "demodialog.h"
 #include "demowidget.h"
+#include "demodialog2.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -53,4 +54,10 @@ void Widget::on_pushButton_dialog_dwm_clicked()
 {
     DemoDialog *widget = new DemoDialog(2, this);
     widget->exec();
+}
+
+void Widget::on_pushButton_dialog_dwm_2_clicked()
+{
+    DemoDialog2 dlg(this);
+    dlg.exec();
 }

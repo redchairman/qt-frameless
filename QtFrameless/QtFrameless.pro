@@ -9,28 +9,27 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    QFramelessDialog.cpp \
     demodialog.cpp \
+    demodialog2.cpp \
     demowidget.cpp \
-    framelesshelper.cpp \
-    framelesswidget.cpp \
     iconhelper.cpp \
     main.cpp \
     myframelessiconctrl.cpp \
-    shadowwidget.cpp \
     widget.cpp
 
 HEADERS += \
+    QFramelessDialog.h \
     demodialog.h \
+    demodialog2.h \
     demowidget.h \
-    framelesshelper.h \
-    framelesswidget.h \
     iconhelper.h \
     myframelessiconctrl.h \
-    shadowwidget.h \
     widget.h
 
 FORMS += \
     demodialog.ui \
+    demodialog2.ui \
     demowidget.ui \
     widget.ui
 
@@ -41,3 +40,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     QtFrameless.qrc
+
+include($$PWD/frameless/frameless.pri)
+

@@ -1,24 +1,12 @@
-﻿/**
- * 去掉标题之后添加边框阴影
- *
- * MakePixmapWidget.h
- * 构造出边框阴影QImage方法的头文件。
- *
- * FlyWM_
- * GitHub: https://github.com/FlyWM
- * CSDN: https://blog.csdn.net/a844651990
- *
- */
-
-#ifndef MAKEPIXMAPWIDGET_H
-#define MAKEPIXMAPWIDGET_H
+﻿#ifndef SHADOWHELPER_H
+#define SHADOWHELPER_H
 
 #include <QWidget>
 #include <QDialog>
 class QPainter;
 
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN320
 #include <windows.h>
 
 typedef struct _MARGINS
@@ -49,36 +37,48 @@ private:
       HMODULE dwmapi_dll_;
 };
 
-class WinDwmShadow
+class DwmShadowHelper
 {
 public:
-    explicit WinDwmShadow(QWidget *w);
+    explicit DwmShadowHelper(QWidget *w);
 private:
     QWidget *m_widget;
 };
 #endif
 
-class ShadowImage : public QObject
+class DrawShadowHelper : public QObject
 {
     Q_OBJECT
+
+    //Q_PROPERTY(QColor clientBgColor READ getClientBgColor WRITE setClientBgColor)
+
 public:
-    explicit ShadowImage(QWidget* w, int shadowSize = 10, QObject *parent = 0);
-    ~ShadowImage();
+    explicit DrawShadowHelper(QWidget* w, int shadowSize = 10, QObject *parent = 0);
+    ~DrawShadowHelper();
     void setShadowSize(int shadowSize);
     void paint(QPainter* p);
     int shadowSize();
 
+//    QColor getClientBgColor() const;
+//    void setClientBgColor(const QColor &value);
+
+    QColor getClientBorderColor() const;
+    void setClientBorderColor(const QColor &value);
+
 public slots:
     void hide();
     void show();
+protected:
+    QImage makeShadowImage(int shadowSize, bool activated);
+    bool splitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArrayCount);
 private:
     int m_shadowSize;
     QImage m_img;
     QRect m_arrayImageGrid[9];
-    QColor m_borderColor;
-    QColor m_bgColor;
+    QColor m_clientBorderColor;
+    QColor m_clientBgColor;
     QWidget *m_widget;
     bool m_show;
 };
 
-#endif // MAKEPIXMAPWIDGET_H
+#endif // SHADOWHELPER_H

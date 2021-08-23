@@ -2,7 +2,6 @@
 #define DEMOWIDGET_H
 
 #include <QWidget>
-#include "shadowwidget.h"
 #include "framelesswidget.h"
 
 namespace Ui {

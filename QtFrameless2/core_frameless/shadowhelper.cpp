@@ -1,32 +1,47 @@
-﻿/**
- * 去掉标题之后添加边框阴影
- *
- * MakePixmapWidget.cpp
- * 构造出边框阴影QImage方法的cpp文件。
- *
- * FlyWM_
- * GitHub: https://github.com/FlyWM
- * CSDN: https://blog.csdn.net/a844651990
- *
- */
-
-#include <QVBoxLayout>
+﻿#include <QVBoxLayout>
 #include <QPainter>
 #include <QMap>
-#include "shadowwidget.h"
+#include "shadowhelper.h"
+
+DrawShadowHelper::DrawShadowHelper(QWidget* w, int shadowSize, QObject *parent)
+    : QObject(parent)
+    , m_shadowSize(shadowSize)
+    , m_clientBorderColor(QColor("#C9C9C9"))
+    , m_widget(w)
+    , m_show(true)
+{
+    m_widget->setAttribute(Qt::WA_TranslucentBackground);
+    //m_widget->setWindowFlags(m_widget->windowFlags() | Qt::FramelessWindowHint);
+    m_clientBgColor = m_widget->palette().color(QPalette::Window);
+    setShadowSize(m_shadowSize);
+}
+
+DrawShadowHelper::~DrawShadowHelper()
+{
+
+}
+
+void DrawShadowHelper::setShadowSize(int shadowSize)
+{
+    m_shadowSize = shadowSize;
+    if (!m_img.isNull()) {
+        m_img = QImage();
+    }
+    m_img = makeShadowImage(m_shadowSize, true);
+    int nImageWidth = m_img.width();
+    int nImageHeight = m_img.height();
+    splitRect(QRect(0, 0, nImageWidth, nImageHeight), shadowSize, m_arrayImageGrid, 9);
+}
 
 inline unsigned char MakeAlpha(int i, double f, int nSize)
 {
     if (i == nSize)
         f *= 1.2;
-    //
-
     double f2 = 1 - cos((double)i / nSize * 3.14 / 2);
-    //
     return int(fabs((i * f) * f2));
 }
 
-QImage MakeShadowImage(int shadowSize, bool activated)
+QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
 {
     int size = shadowSize * 2 + 10;
     QImage image(size, size, QImage::Format_ARGB32);
@@ -38,7 +53,7 @@ QImage MakeShadowImage(int shadowSize, bool activated)
 #endif
 
     //
-    double f = activated ? 2.0 : 1.0;
+    double f = activated ? 4.0 : 1.0;
     //
     QSize szImage = image.size();
     //
@@ -55,7 +70,7 @@ QImage MakeShadowImage(int shadowSize, bool activated)
             {
                 colorIndex = image.colorCount();
                 image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-				alphaColorMap[alpha] = colorIndex;
+                alphaColorMap[alpha] = colorIndex;
             }
             else{
                 colorIndex = it.value();
@@ -136,7 +151,7 @@ QImage MakeShadowImage(int shadowSize, bool activated)
     }
 
     //
-    int parentRoundSize = 3;
+    int parentRoundSize = 0;
     //
     for (int x = 0; x < shadowSize + parentRoundSize; x++) {
         for (int y = 0; y < shadowSize + parentRoundSize; y++) {
@@ -253,7 +268,7 @@ QImage MakeShadowImage(int shadowSize, bool activated)
     return image;
 }
 
-bool SplitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArrayCount)
+bool DrawShadowHelper::splitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArrayCount)
 {
     Q_ASSERT(nArrayCount == 9);
     //
@@ -294,52 +309,43 @@ bool SplitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArray
     return true;
 }
 
-ShadowImage::ShadowImage(QWidget* w, int shadowSize, QObject *parent)
-    : QObject(parent)
-    , m_shadowSize(shadowSize)
-    , m_widget(w)
-    , m_show(true)
+QColor DrawShadowHelper::getClientBorderColor() const
 {
-    m_widget->setAttribute(Qt::WA_TranslucentBackground);
-    //m_widget->setWindowFlags(m_widget->windowFlags() | Qt::FramelessWindowHint);
-    m_bgColor = m_widget->palette().color(QPalette::Window);
-    m_borderColor = QColor(209, 209, 209);
-    setShadowSize(m_shadowSize);
+    return m_clientBorderColor;
 }
 
-ShadowImage::~ShadowImage()
+void DrawShadowHelper::setClientBorderColor(const QColor &color)
 {
-
-}
-
-void ShadowImage::setShadowSize(int shadowSize)
-{
-    m_shadowSize = shadowSize;
-    if (!m_img.isNull()) {
-        m_img = QImage();
+    if (m_clientBorderColor != color) {
+        m_clientBorderColor = color;
+        if (m_widget)
+            m_widget->update();
     }
-    m_img = MakeShadowImage(m_shadowSize, true);
-
-    int nImageWidth = m_img.width();
-    int nImageHeight = m_img.height();
-    SplitRect(QRect(0, 0, nImageWidth, nImageHeight), shadowSize, m_arrayImageGrid, 9);
 }
 
-void ShadowImage::paint(QPainter *p)
+void DrawShadowHelper::paint(QPainter *p)
 {
     p->save();
     if (m_shadowSize > 0 && m_show)
     {
         QRect arrayDest[9];
-        SplitRect(m_widget->rect(), m_shadowSize, arrayDest, 9);
+        splitRect(m_widget->rect(), m_shadowSize, arrayDest, 9);
         for (int i = 0; i < 9; i++) {
             if (i == 4)
             {
-                p->setBrush(m_bgColor);
-                //QRect rc0 = arrayDest[i];
-                QRect rc1 = arrayDest[i].marginsRemoved(QMargins(0, 0, 1, 1));
-                p->setPen(QPen(m_borderColor, 1));
-                p->drawRect(rc1);
+//                p->setBrush(m_clientBgColor);
+//                if (m_clientBorderColor.isValid())
+//                {
+//                    QRect rc1 = arrayDest[i].marginsRemoved(QMargins(0, 0, 1, 1));
+//                    p->setPen(QPen(m_clientBorderColor, 1));
+//                    p->drawRect(rc1);
+//                }
+//                else
+//                {
+//                    QRect rc1 = arrayDest[i].marginsRemoved(QMargins(0, 0, 1, 1));
+//                    p->setPen(QPen(QColor("#3A3A4A")));
+//                    p->drawRect(rc1);
+//                }
             }
             else
             {
@@ -351,19 +357,19 @@ void ShadowImage::paint(QPainter *p)
     }
     else
     {
-        p->setBrush(m_bgColor);
+        p->setBrush(m_clientBgColor);
         p->setPen(Qt::NoPen);
         p->drawRect(m_widget->rect());
     }
     p->restore();
 }
 
-int ShadowImage::shadowSize()
+int DrawShadowHelper::shadowSize()
 {
     return m_shadowSize;
 }
 
-void ShadowImage::hide()
+void DrawShadowHelper::hide()
 {
     m_show = false;
     QLayout* lay = m_widget->layout();
@@ -371,7 +377,7 @@ void ShadowImage::hide()
         lay->setContentsMargins(0, 0, 0, 0);
 }
 
-void ShadowImage::show()
+void DrawShadowHelper::show()
 {
     m_show = true;
     QLayout* lay = m_widget->layout();
@@ -379,7 +385,7 @@ void ShadowImage::show()
         lay->setContentsMargins(m_shadowSize, m_shadowSize, m_shadowSize, m_shadowSize);
 }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN320
 WinDwmapi::WinDwmapi()
     : dwmapi_dll_(LoadLibraryW(L"dwmapi.dll"))
     , dwm_is_composition_enabled_(NULL)
@@ -424,7 +430,7 @@ const WinDwmapi *WinDwmapi::instance()
 }
 
 #pragma comment(lib, "user32.lib")
-WinDwmShadow::WinDwmShadow(QWidget *w)
+DwmShadowHelper::DwmShadowHelper(QWidget *w)
     : m_widget(w)
 {
     m_widget->setWindowFlags(m_widget->windowFlags() | Qt::FramelessWindowHint);

@@ -28,6 +28,8 @@ private slots:
 
     void on_pushButton_dialog_noshadow_clicked();
 
+    void on_pushButton_dialog_dwm_2_clicked();
+
 private:
     Ui::Widget *ui;
 };
