@@ -1,8 +1,10 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 #include "head.h"
+#include "subdialog.h"
 
-Widget::Widget(QWidget *parent) : FramelessWidget(parent), ui(new Ui::Widget)
+Widget::Widget(QWidget *parent)
+    : QFramelessWidget(parent), ui(new Ui::Widget)
 {
     ui->setupUi(this);
     this->initForm();
@@ -18,11 +20,11 @@ void Widget::initForm()
     //设置标题栏控件
     ui->labTitle->setText("无边框窗体示例-支持win、linux、mac等系统 (QQ: 517216493 WX: feiyangqingyun)");
     this->setWindowTitle(ui->labTitle->text());
-    this->setTitleBar(ui->labTitle);
+    this->framelessHelper()->setTitleBar(ui->labTitle);
 
     //关联信号
-    connect(this, SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
-    connect(this, SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
+    connect(framelessHelper(), SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
+    connect(framelessHelper(), SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
 
     //设置样式表
     QStringList list;
@@ -65,4 +67,10 @@ void Widget::on_btnMenu_Max_clicked()
 void Widget::on_btnMenu_Close_clicked()
 {
     this->close();
+}
+
+void Widget::on_pushButton_clicked()
+{
+    SubDialog dlg(this);
+    dlg.exec();
 }

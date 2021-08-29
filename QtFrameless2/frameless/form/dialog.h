@@ -2,12 +2,12 @@
 #define DIALOG_H
 
 #include "framelessdialog.h"
-
+#include "qframelessdialog.h"
 namespace Ui {
 class Dialog;
 }
 
-class Dialog : public FramelessDialog
+class Dialog : public QFramelessDialog
 {
     Q_OBJECT
 

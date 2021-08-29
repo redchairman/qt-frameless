@@ -2,12 +2,13 @@
 #define WIDGET_H
 
 #include "framelesswidget.h"
+#include "qframelesswidget.h"
 
 namespace Ui {
 class Widget;
 }
 
-class Widget : public FramelessWidget
+class Widget : public QFramelessWidget
 {
     Q_OBJECT
 
@@ -27,6 +28,7 @@ private slots:
     void on_btnMenu_Min_clicked();
     void on_btnMenu_Max_clicked();
     void on_btnMenu_Close_clicked();
+    void on_pushButton_clicked();
 };
 
 #endif // WIDGET_H

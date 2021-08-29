@@ -2,12 +2,13 @@
 #define MAINWINDOW_H
 
 #include "framelessmainwindow.h"
+#include "qframelessmainwindow.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public FramelessMainWindow
+class MainWindow : public QFramelessMainWindow
 {
     Q_OBJECT
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.13.1, 2021-08-22T01:14:13. -->
+<!-- Written by QtCreator 4.13.1, 2021-08-29T23:59:22. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -325,8 +325,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:F:/OpenSource/6.5/QWidgetDemo/frameless/frameless.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">F:/OpenSource/6.5/QWidgetDemo/frameless/frameless.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">frameless2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:F:/Work/Project/qt-frameless/QtFrameless2/frameless/frameless.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">F:/Work/Project/qt-frameless/QtFrameless2/frameless/frameless.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
@@ -337,7 +338,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">F:/OpenSource/6.5/QWidgetDemo/core_common/../bin</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">F:/Work/Project/qt-frameless/QtFrameless2/core_common/../bin</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

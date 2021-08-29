@@ -2,7 +2,9 @@
 #include "ui_dialog.h"
 #include "head.h"
 
-Dialog::Dialog(QWidget *parent) : FramelessDialog(parent), ui(new Ui::Dialog)
+Dialog::Dialog(QWidget *parent)
+    : QFramelessDialog(parent)
+    , ui(new Ui::Dialog)
 {
     ui->setupUi(this);
     this->initForm();
@@ -18,11 +20,11 @@ void Dialog::initForm()
     //设置标题栏控件
     ui->labTitle->setText("无边框窗体示例-支持win、linux、mac等系统 (QQ: 517216493 WX: feiyangqingyun)");
     this->setWindowTitle(ui->labTitle->text());
-    this->setTitleBar(ui->labTitle);
+    this->framelessHelper()->setTitleBar(ui->labTitle);
 
     //关联信号
-    connect(this, SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
-    connect(this, SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
+    connect(framelessHelper(), SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
+    connect(framelessHelper(), SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
 
     //设置样式表
     QStringList list;
