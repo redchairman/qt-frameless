@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
     QUIHelper::setFont(15);
     QUIHelper::setCode();
 
+	QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+	QApplication::setAttribute(Qt::AA_NativeWindows,false);
     //MainWindow w;
     Widget w;
     //Dialog w;
