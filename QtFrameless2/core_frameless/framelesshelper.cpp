@@ -23,9 +23,8 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
 {
     m_padding = 8;
     m_moveEnable = true;
-    m_resizeEnable = true;
 #ifdef Q_OS_WIN
-    if (winNativeEvent)
+    if (m_winNativeEvent)
     {
         QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
         QApplication::setAttribute(Qt::AA_NativeWindows, false);
@@ -56,7 +55,7 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
     //设置属性产生win窗体效果,移动到边缘半屏或者最大化等
     //设置以后会产生标题栏需要在下面拦截消息重新去掉
 #ifdef Q_OS_WIN
-    if (winNativeEvent){
+    if (m_winNativeEvent){
         m_widget->setAttribute(Qt::WA_DontCreateNativeAncestors);
         HWND hwnd = (HWND)m_widget->winId();
         DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
@@ -74,7 +73,7 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
     }
 #endif
 
-    if (winNativeEvent == false)
+    if (m_winNativeEvent == false)
     {
         m_widget->setAttribute(Qt::WA_Hover, true);
         if (m_shadowBorder){
@@ -99,7 +98,20 @@ void FramelessHelper::doShowEvent(QEvent *event)
     Q_UNUSED(event)
     //解决有时候窗体重新显示的时候假死不刷新的BUG
     m_widget->setAttribute(Qt::WA_Mapped);
-    //QDialog::showEvent(event);
+    updateDrawShadowState();
+}
+
+void FramelessHelper::updateDrawShadowState()
+{
+    if (m_drawShadow)
+    {
+        if (m_widget->windowState() == Qt::WindowMaximized || m_widget->windowState() == Qt::WindowFullScreen)
+        {
+            m_drawShadow->hide();
+        }else{
+            m_drawShadow->show();
+        }
+    }
 }
 
 void FramelessHelper::doWindowStateChange(QEvent *event)
@@ -114,15 +126,7 @@ void FramelessHelper::doWindowStateChange(QEvent *event)
         m_resizeEnable = false;
     }
 
-    if (m_drawShadow)
-    {
-        if (m_widget->windowState() == Qt::WindowMaximized || m_widget->windowState() == Qt::WindowFullScreen)
-        {
-            m_drawShadow->hide();
-        }else{
-            m_drawShadow->show();
-        }
-    }
+    updateDrawShadowState();
 
     //发出最大化最小化等改变事件,以便界面上更改对应的信息比如右上角图标和文字
     emit windowStateChange(!m_moveEnable);

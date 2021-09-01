@@ -69,8 +69,17 @@ void Widget::on_btnMenu_Close_clicked()
     this->close();
 }
 
-void Widget::on_pushButton_clicked()
+void Widget::on_pushButton_QDialog_clicked()
 {
-    SubDialog dlg(this);
-    dlg.exec();
+
+}
+
+void Widget::on_pushButton_QWidget_clicked()
+{
+
+}
+
+void Widget::on_pushButton_QMainWindow_clicked()
+{
+
 }

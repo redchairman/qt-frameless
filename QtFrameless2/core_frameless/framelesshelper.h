@@ -20,6 +20,8 @@ protected:
     void doResizeEvent(QEvent *event);
     bool eventFilter(QObject *watched, QEvent *event);
 
+    //更新自绘阴影边框显示状态
+    void updateDrawShadowState();
 public:
     //拦截系统事件用于修复系统休眠后唤醒程序的BUG
 #if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))

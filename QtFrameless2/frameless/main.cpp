@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
     QUIHelper::setCode();
 
     //MainWindow w;
-    Widget w;
-    //Dialog w;
+    //Widget w;
+    Dialog w(true);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
     w.resize(800, 600);

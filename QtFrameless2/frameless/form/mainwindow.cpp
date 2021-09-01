@@ -75,3 +75,18 @@ void MainWindow::on_pushButton_clicked()
     dlg.exec();
 //    QMessageBox::warning(this, "error", "eeeeeeeeeeeeee");
 }
+
+void MainWindow::on_pushButton_QDialog_clicked()
+{
+
+}
+
+void MainWindow::on_pushButton_QWidget_clicked()
+{
+
+}
+
+void MainWindow::on_pushButton_QMainWindow_clicked()
+{
+
+}

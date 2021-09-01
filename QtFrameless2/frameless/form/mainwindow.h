@@ -29,6 +29,9 @@ private slots:
     void on_btnMenu_Max_clicked();
     void on_btnMenu_Close_clicked();
     void on_pushButton_clicked();
+    void on_pushButton_QDialog_clicked();
+    void on_pushButton_QWidget_clicked();
+    void on_pushButton_QMainWindow_clicked();
 };
 
 #endif // MAINWINDOW_H

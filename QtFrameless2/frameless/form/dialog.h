@@ -12,7 +12,10 @@ class Dialog : public QFramelessDialog
     Q_OBJECT
 
 public:
-    explicit Dialog(QWidget *parent = 0);
+    explicit Dialog(bool resizeEnable = false,
+                    bool shadowBorder = true,
+                    bool winNativeEvent = true,
+                    QWidget *parent = 0);
     ~Dialog();
 
 private:
@@ -27,7 +30,9 @@ private slots:
     void on_btnMenu_Min_clicked();
     void on_btnMenu_Max_clicked();
     void on_btnMenu_Close_clicked();
-    void on_pushButton_clicked();
+    void on_pushButton_QMainWindow_clicked();
+    void on_pushButton_QDialog_clicked();
+    void on_pushButton_QWidget_clicked();
 };
 
 #endif // DIALOG_H

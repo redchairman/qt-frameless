@@ -1,12 +1,23 @@
 ﻿#include "dialog.h"
 #include "ui_dialog.h"
 #include "head.h"
+#include "widget.h"
+#include "mainwindow.h"
 
-Dialog::Dialog(QWidget *parent)
-    : QFramelessDialog(parent, true)
+Dialog::Dialog(bool resizeEnable,
+               bool shadowBorder,
+               bool winNativeEvent,
+               QWidget *parent)
+    : QFramelessDialog(parent, resizeEnable, shadowBorder, winNativeEvent)
     , ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+
+    if (resizeEnable == false)
+    {
+        ui->btnMenu_Min->hide();
+        ui->btnMenu_Max->hide();
+    }
     this->initForm();
 }
 
@@ -69,8 +80,22 @@ void Dialog::on_btnMenu_Close_clicked()
     this->close();
 }
 
+void Dialog::on_pushButton_QMainWindow_clicked()
+{
 
-void Dialog::on_pushButton_clicked()
+}
+
+void Dialog::on_pushButton_QDialog_clicked()
+{
+    bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
+    bool shadowBorder = ui->checkBox_shadowBorder->isChecked();
+    bool winNativeEvent = ui->checkBox_winNativeEvent->isChecked();
+
+    Dialog dlg(resizeEnable, shadowBorder, winNativeEvent, this);
+    dlg.exec();
+}
+
+void Dialog::on_pushButton_QWidget_clicked()
 {
 
 }
