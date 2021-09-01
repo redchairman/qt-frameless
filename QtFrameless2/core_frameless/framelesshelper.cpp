@@ -5,6 +5,7 @@
 #include "shadowhelper.h"
 #include <QPainter>
 #ifdef Q_OS_WIN
+#include <QApplication>
 #include <windows.h>
 #include <dwmapi.h>
 #pragma comment (lib,"user32.lib")
@@ -13,122 +14,129 @@
 
 #define TIMEMS qPrintable(QTime::currentTime().toString("HH:mm:ss zzz"))
 
-FramelessHelper::FramelessHelper(QWidget* w, QObject *parent)
+FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorder, bool winNativeEvent, QObject *parent)
     : QObject(parent)
-    , widget(w)
+    , m_widget(w)
+    , m_resizeEnable(resizeEnable)
+    , m_shadowBorder(shadowBorder)
+    , m_winNativeEvent(winNativeEvent)
 {
-    padding = 8;
-    moveEnable = true;
-    resizeEnable = true;
-    nativeResize = false;
+    m_padding = 8;
+    m_moveEnable = true;
+    m_resizeEnable = true;
 #ifdef Q_OS_WIN
-    nativeResize = true;
+    if (winNativeEvent)
+    {
+        QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+        QApplication::setAttribute(Qt::AA_NativeWindows, false);
+    }
+#else
+    m_winNativeEvent = false;
 #endif
-    shadowEnable = true;
-    drawShadow = 0;
+    m_drawShadow = nullptr;
 
-    mousePressed = false;
-    mousePoint = QPoint(0, 0);
-    mouseRect = QRect(0, 0, 0, 0);
+    m_mousePressed = false;
+    m_mousePoint = QPoint(0, 0);
+    m_mouseRect = QRect(0, 0, 0, 0);
 
     for (int i = 0; i < 8; ++i) {
-        pressedArea << false;
-        pressedRect << QRect(0, 0, 0, 0);
+        m_pressedArea << false;
+        m_pressedRect << QRect(0, 0, 0, 0);
     }
 
-    isMin = false;
-    flags = widget->windowFlags();
-    titleBar = 0;
+    m_isMin = false;
+    m_flags = m_widget->windowFlags();
+    m_titleBar = 0;
 
-    //设置背景透明 官方在5.3以后才彻底修复 WA_TranslucentBackground+FramelessWindowHint 并存不绘制的BUG
-#if (QT_VERSION >= QT_VERSION_CHECK(5,3,0))
-    //this->setAttribute(Qt::WA_TranslucentBackground);
-#endif
     //设置无边框属性
-    widget->setWindowFlags(flags | Qt::FramelessWindowHint);
+    m_widget->setWindowFlags(m_flags | Qt::FramelessWindowHint);
     //安装事件过滤器识别拖动
-    widget->installEventFilter(this);
+    m_widget->installEventFilter(this);
 
     //设置属性产生win窗体效果,移动到边缘半屏或者最大化等
     //设置以后会产生标题栏需要在下面拦截消息重新去掉
 #ifdef Q_OS_WIN
-    if (nativeResize){
-        HWND hwnd = (HWND)widget->winId();
+    if (winNativeEvent){
+        m_widget->setAttribute(Qt::WA_DontCreateNativeAncestors);
+        HWND hwnd = (HWND)m_widget->winId();
         DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
         if (resizeEnable) {
             ::SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION);
         }else{
             ::SetWindowLong(hwnd, GWL_STYLE, style | WS_THICKFRAME | WS_CAPTION);
         }
-        if (shadowEnable)
+        if (m_shadowBorder)
         {
             //we better left 1 piexl width of border untouch, so OS can draw nice shadow around it
             const MARGINS shadow = { 1, 1, 1, 1 };
-            DwmExtendFrameIntoClientArea(HWND(widget->winId()), &shadow);
+            DwmExtendFrameIntoClientArea(HWND(m_widget->winId()), &shadow);
         }
     }
 #endif
 
-    if (nativeResize == false){
-        widget->setAttribute(Qt::WA_Hover, true);
-        if (shadowEnable){
-            drawShadow = new DrawShadowHelper(widget, 10, this);
-            setPadding(padding + 5);
+    if (winNativeEvent == false)
+    {
+        m_widget->setAttribute(Qt::WA_Hover, true);
+        if (m_shadowBorder){
+            m_drawShadow = new DrawShadowHelper(m_widget, 10, this);
+            setPadding(m_padding + 5);
         }
     }
 }
 
-void FramelessHelper::paintEvent(QPaintEvent *e)
+void FramelessHelper::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(e)
-    QPainter painter(widget);
+    Q_UNUSED(event)
+    QPainter painter(m_widget);
     painter.save();
-    if (drawShadow)
-        drawShadow->paint(&painter);
+    if (m_drawShadow)
+        m_drawShadow->paint(&painter);
     painter.restore();
 }
 
 void FramelessHelper::doShowEvent(QEvent *event)
 {
+    Q_UNUSED(event)
     //解决有时候窗体重新显示的时候假死不刷新的BUG
-    widget->setAttribute(Qt::WA_Mapped);
+    m_widget->setAttribute(Qt::WA_Mapped);
     //QDialog::showEvent(event);
 }
 
 void FramelessHelper::doWindowStateChange(QEvent *event)
 {
+    Q_UNUSED(event)
     //非最大化才能移动和拖动大小
-    if (widget->windowState() == Qt::WindowNoState) {
-        moveEnable = true;
-        resizeEnable = true;
+    if (m_widget->windowState() == Qt::WindowNoState) {
+        m_moveEnable = true;
+        m_resizeEnable = true;
     } else {
-        moveEnable = false;
-        resizeEnable = false;
+        m_moveEnable = false;
+        m_resizeEnable = false;
     }
 
-    if (drawShadow)
+    if (m_drawShadow)
     {
-        if (widget->windowState() == Qt::WindowMaximized || widget->windowState() == Qt::WindowFullScreen)
+        if (m_widget->windowState() == Qt::WindowMaximized || m_widget->windowState() == Qt::WindowFullScreen)
         {
-            drawShadow->hide();
+            m_drawShadow->hide();
         }else{
-            drawShadow->show();
+            m_drawShadow->show();
         }
     }
 
     //发出最大化最小化等改变事件,以便界面上更改对应的信息比如右上角图标和文字
-    emit windowStateChange(!moveEnable);
+    emit windowStateChange(!m_moveEnable);
 
     //解决mac系统上无边框最小化失效的BUG
 #ifdef Q_OS_MACOS
-    if (widget->windowState() & Qt::WindowMinimized) {
-        isMin = true;
+    if (m_widget->windowState() & Qt::WindowMinimized) {
+        m_isMin = true;
     } else {
-        if (isMin) {
+        if (m_isMin) {
             //设置无边框属性
-            widget->setWindowFlags(flags | Qt::FramelessWindowHint);
-            widget->setVisible(true);
-            isMin = false;
+            m_widget->setWindowFlags(flags | Qt::FramelessWindowHint);
+            m_widget->setVisible(true);
+            m_isMin = false;
         }
     }
 #endif
@@ -139,72 +147,72 @@ void FramelessHelper::doResizeEvent(QEvent *event)
     //非win系统的无边框拉伸,win系统上已经采用了nativeEvent来处理拉伸
     //为何不统一用计算的方式因为在win上用这个方式往左拉伸会发抖妹的
 #ifdef Q_OS_WIN
-    if (nativeResize)
+    if (m_winNativeEvent)
         return;
 #endif
     if (event->type() == QEvent::Resize) {
         //重新计算八个描点的区域,描点区域的作用还有就是计算鼠标坐标是否在某一个区域内
-        int width = widget->width();
-        int height = widget->height();
+        int width = m_widget->width();
+        int height = m_widget->height();
 
         //左侧描点区域
-        pressedRect[0] = QRect(0, padding, padding, height - padding * 2);
+        m_pressedRect[0] = QRect(0, m_padding, m_padding, height - m_padding * 2);
         //右侧描点区域
-        pressedRect[1] = QRect(width - padding, padding, padding, height - padding * 2);
+        m_pressedRect[1] = QRect(width - m_padding, m_padding, m_padding, height - m_padding * 2);
         //上侧描点区域
-        pressedRect[2] = QRect(padding, 0, width - padding * 2, padding);
+        m_pressedRect[2] = QRect(m_padding, 0, width - m_padding * 2, m_padding);
         //下侧描点区域
-        pressedRect[3] = QRect(padding, height - padding, width - padding * 2, padding);
+        m_pressedRect[3] = QRect(m_padding, height - m_padding, width - m_padding * 2, m_padding);
 
         //左上角描点区域
-        pressedRect[4] = QRect(0, 0, padding, padding);
+        m_pressedRect[4] = QRect(0, 0, m_padding, m_padding);
         //右上角描点区域
-        pressedRect[5] = QRect(width - padding, 0, padding, padding);
+        m_pressedRect[5] = QRect(width - m_padding, 0, m_padding, m_padding);
         //左下角描点区域
-        pressedRect[6] = QRect(0, height - padding, padding, padding);
+        m_pressedRect[6] = QRect(0, height - m_padding, m_padding, m_padding);
         //右下角描点区域
-        pressedRect[7] = QRect(width - padding, height - padding, padding, padding);
+        m_pressedRect[7] = QRect(width - m_padding, height - m_padding, m_padding, m_padding);
     } else if (event->type() == QEvent::HoverMove) {
         //设置对应鼠标形状,这个必须放在这里而不是下面,因为可以在鼠标没有按下的时候识别
         QHoverEvent *hoverEvent = (QHoverEvent *)event;
         QPoint point = hoverEvent->pos();
-        if (resizeEnable) {
-            if (pressedRect.at(0).contains(point)) {
-                widget->setCursor(Qt::SizeHorCursor);
-            } else if (pressedRect.at(1).contains(point)) {
-                widget->setCursor(Qt::SizeHorCursor);
-            } else if (pressedRect.at(2).contains(point)) {
-                widget->setCursor(Qt::SizeVerCursor);
-            } else if (pressedRect.at(3).contains(point)) {
-                widget->setCursor(Qt::SizeVerCursor);
-            } else if (pressedRect.at(4).contains(point)) {
-                widget->setCursor(Qt::SizeFDiagCursor);
-            } else if (pressedRect.at(5).contains(point)) {
-                widget->setCursor(Qt::SizeBDiagCursor);
-            } else if (pressedRect.at(6).contains(point)) {
-                widget->setCursor(Qt::SizeBDiagCursor);
-            } else if (pressedRect.at(7).contains(point)) {
-                widget->setCursor(Qt::SizeFDiagCursor);
+        if (m_resizeEnable) {
+            if (m_pressedRect.at(0).contains(point)) {
+                m_widget->setCursor(Qt::SizeHorCursor);
+            } else if (m_pressedRect.at(1).contains(point)) {
+                m_widget->setCursor(Qt::SizeHorCursor);
+            } else if (m_pressedRect.at(2).contains(point)) {
+                m_widget->setCursor(Qt::SizeVerCursor);
+            } else if (m_pressedRect.at(3).contains(point)) {
+                m_widget->setCursor(Qt::SizeVerCursor);
+            } else if (m_pressedRect.at(4).contains(point)) {
+                m_widget->setCursor(Qt::SizeFDiagCursor);
+            } else if (m_pressedRect.at(5).contains(point)) {
+                m_widget->setCursor(Qt::SizeBDiagCursor);
+            } else if (m_pressedRect.at(6).contains(point)) {
+                m_widget->setCursor(Qt::SizeBDiagCursor);
+            } else if (m_pressedRect.at(7).contains(point)) {
+                m_widget->setCursor(Qt::SizeFDiagCursor);
             } else {
-                widget->setCursor(Qt::ArrowCursor);
+                m_widget->setCursor(Qt::ArrowCursor);
             }
         }
 
         //根据当前鼠标位置,计算XY轴移动了多少
-        int offsetX = point.x() - mousePoint.x();
-        int offsetY = point.y() - mousePoint.y();
+        int offsetX = point.x() - m_mousePoint.x();
+        int offsetY = point.y() - m_mousePoint.y();
 
         //根据按下处的位置判断是否是移动控件还是拉伸控件
-        if (moveEnable && mousePressed) {
-            widget->move(widget->x() + offsetX, widget->y() + offsetY);
+        if (m_moveEnable && m_mousePressed) {
+            m_widget->move(m_widget->x() + offsetX, m_widget->y() + offsetY);
         }
 
         //最大化时，点击标题栏或者顶部锚点，移动鼠标，则还原窗口
-        if ((pressedArea[2] || mousePressed) &&
-            widget->windowState() == Qt::WindowMaximized)
+        if ((m_pressedArea[2] || m_mousePressed) &&
+            m_widget->windowState() == Qt::WindowMaximized)
         {
-            QRect normalRect = widget->normalGeometry();
-            float fx = (float)point.x() / (float)widget->rect().width();
+            QRect normalRect = m_widget->normalGeometry();
+            float fx = (float)point.x() / (float)m_widget->rect().width();
             int offsetY = point.y();
             emit titleDblClick();
 
@@ -212,108 +220,108 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             x1 = point.x() - x1;
             int y1 = point.y() - offsetY;
             //点击顶部锚点时候，必须将y坐标向下移动一点，这样窗口还原后，鼠标不会继续触发顶部锚点
-            if (pressedArea[2]){
+            if (m_pressedArea[2]){
                 y1 -= 8;
-                if (drawShadow)
-                    y1 -= drawShadow->shadowSize();
+                if (m_drawShadow)
+                    y1 -= m_drawShadow->shadowSize();
             }
-            widget->move(x1, y1);
+            m_widget->move(x1, y1);
             //重新计算移动起点和大小
-            mousePoint = widget->mapFromGlobal(point);
-            mouseRect = widget->geometry();
-            mousePressed = true;
-            pressedArea[2] = false;
+            m_mousePoint = m_widget->mapFromGlobal(point);
+            m_mouseRect = m_widget->geometry();
+            m_mousePressed = true;
+            m_pressedArea[2] = false;
         }
 
-        if (resizeEnable) {
-            int rectX = mouseRect.x();
-            int rectY = mouseRect.y();
-            int rectW = mouseRect.width();
-            int rectH = mouseRect.height();
+        if (m_resizeEnable) {
+            int rectX = m_mouseRect.x();
+            int rectY = m_mouseRect.y();
+            int rectW = m_mouseRect.width();
+            int rectH = m_mouseRect.height();
 
-            if (pressedArea.at(0)) {
-                int resizeW = widget->width() - offsetX;
-                if (widget->minimumWidth() <= resizeW) {
-                    widget->setGeometry(widget->x() + offsetX, rectY, resizeW, rectH);
+            if (m_pressedArea.at(0)) {
+                int resizeW = m_widget->width() - offsetX;
+                if (m_widget->minimumWidth() <= resizeW) {
+                    m_widget->setGeometry(m_widget->x() + offsetX, rectY, resizeW, rectH);
                 }
-            } else if (pressedArea.at(1)) {
-                widget->setGeometry(rectX, rectY, rectW + offsetX, rectH);
-            } else if (pressedArea.at(2)) {
-                int resizeH = widget->height() - offsetY;
-                if (widget->minimumHeight() <= resizeH) {
-                    widget->setGeometry(rectX, widget->y() + offsetY, rectW, resizeH);
+            } else if (m_pressedArea.at(1)) {
+                m_widget->setGeometry(rectX, rectY, rectW + offsetX, rectH);
+            } else if (m_pressedArea.at(2)) {
+                int resizeH = m_widget->height() - offsetY;
+                if (m_widget->minimumHeight() <= resizeH) {
+                    m_widget->setGeometry(rectX, m_widget->y() + offsetY, rectW, resizeH);
                 }
-            } else if (pressedArea.at(3)) {
-                widget->setGeometry(rectX, rectY, rectW, rectH + offsetY);
-            } else if (pressedArea.at(4)) {
-                int resizeW = widget->width() - offsetX;
-                int resizeH = widget->height() - offsetY;
-                if (widget->minimumWidth() <= resizeW) {
-                    widget->setGeometry(widget->x() + offsetX, widget->y(), resizeW, resizeH);
+            } else if (m_pressedArea.at(3)) {
+                m_widget->setGeometry(rectX, rectY, rectW, rectH + offsetY);
+            } else if (m_pressedArea.at(4)) {
+                int resizeW = m_widget->width() - offsetX;
+                int resizeH = m_widget->height() - offsetY;
+                if (m_widget->minimumWidth() <= resizeW) {
+                    m_widget->setGeometry(m_widget->x() + offsetX, m_widget->y(), resizeW, resizeH);
                 }
-                if (widget->minimumHeight() <= resizeH) {
-                    widget->setGeometry(widget->x(), widget->y() + offsetY, resizeW, resizeH);
+                if (m_widget->minimumHeight() <= resizeH) {
+                    m_widget->setGeometry(m_widget->x(), m_widget->y() + offsetY, resizeW, resizeH);
                 }
-            } else if (pressedArea.at(5)) {
+            } else if (m_pressedArea.at(5)) {
                 int resizeW = rectW + offsetX;
-                int resizeH = widget->height() - offsetY;
-                if (widget->minimumHeight() <= resizeH) {
-                    widget->setGeometry(widget->x(), widget->y() + offsetY, resizeW, resizeH);
+                int resizeH = m_widget->height() - offsetY;
+                if (m_widget->minimumHeight() <= resizeH) {
+                    m_widget->setGeometry(m_widget->x(), m_widget->y() + offsetY, resizeW, resizeH);
                 }
-            } else if (pressedArea.at(6)) {
-                int resizeW = widget->width() - offsetX;
+            } else if (m_pressedArea.at(6)) {
+                int resizeW = m_widget->width() - offsetX;
                 int resizeH = rectH + offsetY;
-                if (widget->minimumWidth() <= resizeW) {
-                    widget->setGeometry(widget->x() + offsetX, widget->y(), resizeW, resizeH);
+                if (m_widget->minimumWidth() <= resizeW) {
+                    m_widget->setGeometry(m_widget->x() + offsetX, m_widget->y(), resizeW, resizeH);
                 }
-                if (widget->minimumHeight() <= resizeH) {
-                    widget->setGeometry(widget->x(), widget->y(), resizeW, resizeH);
+                if (m_widget->minimumHeight() <= resizeH) {
+                    m_widget->setGeometry(m_widget->x(), m_widget->y(), resizeW, resizeH);
                 }
-            } else if (pressedArea.at(7)) {
+            } else if (m_pressedArea.at(7)) {
                 int resizeW = rectW + offsetX;
                 int resizeH = rectH + offsetY;
-                widget->setGeometry(widget->x(), widget->y(), resizeW, resizeH);
+                m_widget->setGeometry(m_widget->x(), m_widget->y(), resizeW, resizeH);
             }
         }
     } else if (event->type() == QEvent::MouseButtonPress) {
         //记住鼠标按下的坐标+窗体区域
         QMouseEvent *mouseEvent = (QMouseEvent *)event;
-        mousePoint = mouseEvent->pos();
-        mouseRect = widget->geometry();
+        m_mousePoint = mouseEvent->pos();
+        m_mouseRect = m_widget->geometry();
 
         //判断按下的手柄的区域位置
-        if (pressedRect.at(0).contains(mousePoint)) {
-            pressedArea[0] = true;
-        } else if (pressedRect.at(1).contains(mousePoint)) {
-            pressedArea[1] = true;
-        } else if (pressedRect.at(2).contains(mousePoint)) {
-            pressedArea[2] = true;
-        } else if (pressedRect.at(3).contains(mousePoint)) {
-            pressedArea[3] = true;
-        } else if (pressedRect.at(4).contains(mousePoint)) {
-            pressedArea[4] = true;
-        } else if (pressedRect.at(5).contains(mousePoint)) {
-            pressedArea[5] = true;
-        } else if (pressedRect.at(6).contains(mousePoint)) {
-            pressedArea[6] = true;
-        } else if (pressedRect.at(7).contains(mousePoint)) {
-            pressedArea[7] = true;
+        if (m_pressedRect.at(0).contains(m_mousePoint)) {
+            m_pressedArea[0] = true;
+        } else if (m_pressedRect.at(1).contains(m_mousePoint)) {
+            m_pressedArea[1] = true;
+        } else if (m_pressedRect.at(2).contains(m_mousePoint)) {
+            m_pressedArea[2] = true;
+        } else if (m_pressedRect.at(3).contains(m_mousePoint)) {
+            m_pressedArea[3] = true;
+        } else if (m_pressedRect.at(4).contains(m_mousePoint)) {
+            m_pressedArea[4] = true;
+        } else if (m_pressedRect.at(5).contains(m_mousePoint)) {
+            m_pressedArea[5] = true;
+        } else if (m_pressedRect.at(6).contains(m_mousePoint)) {
+            m_pressedArea[6] = true;
+        } else if (m_pressedRect.at(7).contains(m_mousePoint)) {
+            m_pressedArea[7] = true;
         } else {
             //点击标题栏，才可以移动窗体，如果希望点击窗体即可移动，则去掉下面判断条件
-            QRect titleRect = titleBar->rect();
-            titleRect = QRect(titleBar->mapTo(widget, titleRect.topLeft()), titleRect.size());
-            if (titleRect.contains(mousePoint)) {
-                mousePressed = true;
+            QRect titleRect = m_titleBar->rect();
+            titleRect = QRect(m_titleBar->mapTo(m_widget, titleRect.topLeft()), titleRect.size());
+            if (titleRect.contains(m_mousePoint)) {
+                m_mousePressed = true;
             }
         }
     } else if (event->type() == QEvent::MouseMove) {
         //改成用HoverMove识别
     } else if (event->type() == QEvent::MouseButtonRelease) {
         //恢复所有
-        widget->setCursor(Qt::ArrowCursor);
-        mousePressed = false;
+        m_widget->setCursor(Qt::ArrowCursor);
+        m_mousePressed = false;
         for (int i = 0; i < 8; ++i) {
-            pressedArea[i] = false;
+            m_pressedArea[i] = false;
         }
     }
 
@@ -321,26 +329,20 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 
 bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == widget) {
+    if (watched == m_widget) {
         qDebug() << event;
         if (event->type() == QEvent::WindowStateChange) {
             doWindowStateChange(event);
         } else if (event->type() == QEvent::Show) {
             doShowEvent(event);
-        } else if (event->type() == QEvent::WindowActivate) {
-            //qDebug() << event;
-            //widget->activateWindow();
-        } else if (event->type() == QEvent::WindowDeactivate) {
-            qDebug() << event;
         } else {
             doResizeEvent(event);
         }
-    } else if (watched == titleBar) {
+    } else if (watched == m_titleBar) {
         //双击标题栏发出双击信号给主界面
         //下面的 *result = HTCAPTION; 标志位也会自动识别双击标题栏
 #ifdef Q_OS_WIN
-        //qDebug() << "title bar hwnd: " << titleBar->winId();
-        if (nativeResize == false)
+        if (m_winNativeEvent == false)
 #endif
         {
             if (event->type() == QEvent::MouseButtonDblClick) {
@@ -352,7 +354,6 @@ bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
     }
 
     return false;
-//    return QDialog::eventFilter(watched, event);
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
@@ -363,7 +364,7 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
 {
     if (eventType == "windows_generic_MSG") {
 #ifdef Q_OS_WIN
-        if (nativeResize == false) {
+        if (m_winNativeEvent == false) {
             return false;
         }
         MSG *msg = static_cast<MSG *>(message);
@@ -380,17 +381,17 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
             //计算鼠标对应的屏幕坐标
             long x = LOWORD(msg->lParam);
             long y = HIWORD(msg->lParam);
-            QPoint pos = widget->mapFromGlobal(QPoint(x, y));
+            QPoint pos = m_widget->mapFromGlobal(QPoint(x, y));
             qDebug() << "WM_NCHITTEST " << pos;
             //判断当前鼠标位置在哪个区域
-            bool left = pos.x() < padding;
-            bool right = pos.x() > widget->width() - padding;
-            bool top = pos.y() < padding;
-            bool bottom = pos.y() > widget->height() - padding;
+            bool left = pos.x() < m_padding;
+            bool right = pos.x() > m_widget->width() - m_padding;
+            bool top = pos.y() < m_padding;
+            bool bottom = pos.y() > m_widget->height() - m_padding;
 
             //鼠标移动到四个角,这个消息是当鼠标移动或者有鼠标键按下时候发出的
             *result = 0;
-            if (resizeEnable) {
+            if (m_resizeEnable) {
                 if (left && top) {
                     *result = HTTOPLEFT;
                 } else if (left && bottom) {
@@ -416,8 +417,8 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
             }
 
             //识别标题栏拖动产生半屏全屏效果
-            if (titleBar != 0 && titleBar->rect().contains(pos)) {
-                QWidget *child = titleBar->childAt(pos);
+            if (m_titleBar != 0 && m_titleBar->rect().contains(pos)) {
+                QWidget *child = m_titleBar->childAt(pos);
                 if (!child) {
                     *result = HTCAPTION;
                     return true;
@@ -433,17 +434,17 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
                 AdjustWindowRectEx(&frame, WS_OVERLAPPEDWINDOW, FALSE, 0);
                 frame.left = abs(frame.left);
                 frame.top = abs(frame.bottom);
-                widget->setContentsMargins(frame.left, frame.top, frame.right, frame.bottom);
+                m_widget->setContentsMargins(frame.left, frame.top, frame.right, frame.bottom);
             }
             else {
-                widget->setContentsMargins(0, 0, 0, 0);
+                m_widget->setContentsMargins(0, 0, 0, 0);
             }
             return false;
 //            *result = ::DefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam);
 //            return true;
         }else if (msg->wParam == PBT_APMSUSPEND && msg->message == WM_POWERBROADCAST) {
             //系统休眠的时候自动最小化可以规避程序可能出现的问题
-            widget->showMinimized();
+            m_widget->showMinimized();
         } else if (msg->wParam == PBT_APMRESUMEAUTOMATIC) {
             //休眠唤醒后自动打开
             //this->showNormal();
@@ -459,34 +460,25 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
     return false;
 }
 
-//#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
-//#ifdef Q_OS_WIN
-//bool FramelessHelper::winEvent(MSG *message, long *result)
-//{
-//    return nativeEvent("windows_generic_MSG", message, result);
-//}
-//#endif
-//#endif
-
 void FramelessHelper::setPadding(int padding)
 {
-    this->padding = padding;
+    this->m_padding = padding;
 }
 
 void FramelessHelper::setMoveEnable(bool moveEnable)
 {
-    this->moveEnable = moveEnable;
+    this->m_moveEnable = moveEnable;
 }
 
 void FramelessHelper::setResizeEnable(bool resizeEnable)
 {
-    this->resizeEnable = resizeEnable;
+    this->m_resizeEnable = resizeEnable;
 }
 
 void FramelessHelper::setTitleBar(QWidget *titleBar)
 {
-    this->titleBar = titleBar;
-    this->titleBar->installEventFilter(this);
+    this->m_titleBar = titleBar;
+    this->m_titleBar->installEventFilter(this);
 }
 
 

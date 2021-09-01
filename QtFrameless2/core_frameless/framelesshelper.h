@@ -9,7 +9,7 @@ class FramelessHelper : public QObject
 {
     Q_OBJECT
 public:
-    explicit FramelessHelper(QWidget* w, QObject *parent = 0);
+    explicit FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorder = true, bool winNativeEvent = true, QObject *parent = 0);
 
 protected:
     //窗体显示的时候触发
@@ -28,45 +28,39 @@ public:
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 #endif
 
-//    //Qt4的写法
-//#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
-//#ifdef Q_OS_WIN
-//    bool winEvent(MSG *message, long *result);
-//#endif
-//#endif
-
     void paintEvent(QPaintEvent *e);
+
 private:
-    QWidget *widget;
+    QWidget *m_widget;
     //边距+可移动+可拉伸+阴影边框
-    int padding;
-    bool moveEnable;
-    bool resizeEnable;
-    bool shadowEnable;
+    int m_padding;
+    bool m_moveEnable;
+    bool m_resizeEnable;
+    bool m_shadowBorder;
 
     //标题栏控件
-    QWidget *titleBar;
+    QWidget *m_titleBar;
 
     //鼠标是否按下+按下坐标+按下时窗体区域
-    bool mousePressed;
-    QPoint mousePoint;
-    QRect mouseRect;
+    bool m_mousePressed;
+    QPoint m_mousePoint;
+    QRect m_mouseRect;
 
     //鼠标是否按下某个区域+按下区域的大小
     //依次为 左侧+右侧+上侧+下侧+左上侧+右上侧+左下侧+右下侧
-    QList<bool> pressedArea;
-    QList<QRect> pressedRect;
+    QList<bool> m_pressedArea;
+    QList<QRect> m_pressedRect;
 
     //记录是否最小化
-    bool isMin;
+    bool m_isMin;
     //存储窗体默认的属性
-    Qt::WindowFlags flags;
+    Qt::WindowFlags m_flags;
 
-    //windows是否采用NativeEvent进行resize，linux下该值为false
-    bool nativeResize;
+    //windows是否采用NativeEvent进行Resize、阴影边框，linux下该值为false
+    bool m_winNativeEvent;
 
     //自绘制阴影边框
-    DrawShadowHelper* drawShadow;
+    DrawShadowHelper* m_drawShadow;
 
 public:
     //设置边距+可拖动+可拉伸

@@ -9,7 +9,7 @@ class QFramelessMainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit QFramelessMainWindow(QWidget *parent = 0);
+    explicit QFramelessMainWindow(QWidget *parent = 0, bool resizeEnable = true, bool shadowBorder = true, bool winNativeEvent = true);
 
     FramelessHelper *framelessHelper();
 

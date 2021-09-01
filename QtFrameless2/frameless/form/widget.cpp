@@ -4,7 +4,7 @@
 #include "subdialog.h"
 
 Widget::Widget(QWidget *parent)
-    : QFramelessWidget(parent), ui(new Ui::Widget)
+    : QFramelessWidget(parent, true), ui(new Ui::Widget)
 {
     ui->setupUi(this);
     this->initForm();

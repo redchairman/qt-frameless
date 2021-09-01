@@ -9,7 +9,7 @@ class QFramelessDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit QFramelessDialog(QWidget *parent = 0);
+    explicit QFramelessDialog(QWidget *parent = 0, bool resizeEnable = false, bool shadowBorder = true, bool winNativeEvent = true);
 
     FramelessHelper *framelessHelper();
 

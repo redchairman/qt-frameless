@@ -3,7 +3,7 @@
 #include "head.h"
 
 Dialog::Dialog(QWidget *parent)
-    : QFramelessDialog(parent)
+    : QFramelessDialog(parent, true)
     , ui(new Ui::Dialog)
 {
     ui->setupUi(this);

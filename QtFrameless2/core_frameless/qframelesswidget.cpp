@@ -1,8 +1,8 @@
 ﻿#include "qframelesswidget.h"
 
-QFramelessWidget::QFramelessWidget(QWidget *parent)
+QFramelessWidget::QFramelessWidget(QWidget *parent, bool resizeEnable, bool shadowBorder, bool winNativeEvent)
     : QWidget(parent)
-    , m_framelessHelper(new FramelessHelper(this, this))
+    , m_framelessHelper(new FramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this))
 {    
 }
 

@@ -1,10 +1,10 @@
 ﻿#include "qframelessdialog.h"
 
-QFramelessDialog::QFramelessDialog(QWidget *parent)
+QFramelessDialog::QFramelessDialog(QWidget *parent, bool resizeEnable, bool shadowBorder, bool winNativeEvent)
     : QDialog(parent)
     , m_framelessHelper(0)
 {
-    m_framelessHelper = new FramelessHelper(this, this);
+    m_framelessHelper = new FramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this);
 }
 
 FramelessHelper *QFramelessDialog::framelessHelper()

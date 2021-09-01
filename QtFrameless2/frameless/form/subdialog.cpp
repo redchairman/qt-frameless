@@ -2,7 +2,7 @@
 #include "ui_subdialog.h"
 
 SubDialog::SubDialog(QWidget *parent) :
-    QFramelessDialog(parent),
+    QFramelessDialog(parent, false),
     ui(new Ui::SubDialog)
 {
     ui->setupUi(this);
