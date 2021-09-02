@@ -2,8 +2,9 @@
 
 QFramelessMainWindow::QFramelessMainWindow(QWidget *parent, bool resizeEnable, bool shadowBorder, bool winNativeEvent)
     : QMainWindow(parent)
-    , m_framelessHelper(new FramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this))
+    , m_framelessHelper(0)
 {    
+    m_framelessHelper = new FramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this);
 }
 
 FramelessHelper *QFramelessMainWindow::framelessHelper()
@@ -13,6 +14,8 @@ FramelessHelper *QFramelessMainWindow::framelessHelper()
 
 void QFramelessMainWindow::paintEvent(QPaintEvent *e)
 {
+    if (m_framelessHelper == 0)
+        return;
     m_framelessHelper->paintEvent(e);
 }
 
@@ -22,6 +25,8 @@ bool QFramelessMainWindow::nativeEvent(const QByteArray &eventType, void *messag
 bool QFramelessMainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
 #endif
 {
+    if (m_framelessHelper == 0)
+        return false;
     return m_framelessHelper->nativeEvent(eventType, message, result);
 }
 

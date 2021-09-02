@@ -334,7 +334,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == m_widget) {
-        qDebug() << event;
+        //qDebug() << event;
         if (event->type() == QEvent::WindowStateChange) {
             doWindowStateChange(event);
         } else if (event->type() == QEvent::Show) {
@@ -386,7 +386,7 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
             long x = LOWORD(msg->lParam);
             long y = HIWORD(msg->lParam);
             QPoint pos = m_widget->mapFromGlobal(QPoint(x, y));
-            qDebug() << "WM_NCHITTEST " << pos;
+            //qDebug() << "WM_NCHITTEST " << pos;
             //判断当前鼠标位置在哪个区域
             bool left = pos.x() < m_padding;
             bool right = pos.x() > m_widget->width() - m_padding;
