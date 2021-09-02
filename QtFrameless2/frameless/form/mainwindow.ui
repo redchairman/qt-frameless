@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>715</width>
-    <height>380</height>
+    <width>619</width>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,6 +64,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="text">
+          <string>无边框窗体示例-支持win、linux、mac等系统 (WX: 18971631501)</string>
          </property>
         </widget>
        </item>
@@ -232,6 +235,9 @@
          <property name="text">
           <string>Resize enable</string>
          </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="2" column="1" colspan="3">
@@ -239,12 +245,18 @@
          <property name="text">
           <string>Shadow border</string>
          </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="3" column="1" colspan="3">
         <widget class="QCheckBox" name="checkBox_winNativeEvent">
          <property name="text">
           <string>Use Windows nativeEvent</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -265,13 +277,13 @@
         <widget class="QPushButton" name="pushButton_QDialog">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>40</height>
           </size>
          </property>
@@ -284,13 +296,13 @@
         <widget class="QPushButton" name="pushButton_QWidget">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>40</height>
           </size>
          </property>
@@ -303,13 +315,13 @@
         <widget class="QPushButton" name="pushButton_QMainWindow">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>40</height>
           </size>
          </property>

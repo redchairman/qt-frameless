@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>585</width>
-    <height>441</height>
+    <width>689</width>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,13 +40,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>60</height>
+       <height>40</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>60</height>
+       <height>40</height>
       </size>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -69,6 +69,9 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="text">
+         <string>无边框窗体示例-支持win、linux、mac等系统 (WX: 18971631501)</string>
         </property>
        </widget>
       </item>

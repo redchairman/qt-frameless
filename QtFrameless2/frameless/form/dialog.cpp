@@ -29,7 +29,7 @@ Dialog::~Dialog()
 void Dialog::initForm()
 {
     //设置标题栏控件
-    ui->labTitle->setText("无边框窗体示例-支持win、linux、mac等系统 (QQ: 517216493 WX: feiyangqingyun)");
+    //ui->labTitle->setText("无边框窗体示例-支持win、linux、mac等系统 (QQ: 517216493 WX: feiyangqingyun)");
     this->setWindowTitle(ui->labTitle->text());
     this->framelessHelper()->setTitleBar(ui->labTitle);
 
@@ -39,9 +39,10 @@ void Dialog::initForm()
 
     //设置样式表
     QStringList list;
-    list << "#titleBar{background:#BBBBBB;}";
+    list << "#titleBar{background:#22cb64;}";
+    list << "#labTitle{color:#ffffff;}";
     //list << "#titleBar{border-top-left-radius:8px;border-top-right-radius:8px;}";
-    list << "#widgetMain{border:1px solid #BBBBBB;background:#FFFFFF;}";
+    list << "#widgetMain{border:1px solid #22cb64;background:#f1fcf3;}";
     //list << "#widgetMain{border-bottom-left-radius:8px;border-bottom-right-radius:8px;}";
     this->setStyleSheet(list.join(""));
 }

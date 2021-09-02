@@ -1,6 +1,7 @@
 ﻿#include <QVBoxLayout>
 #include <QPainter>
 #include <QMap>
+#include <QMainWindow>
 #include "shadowhelper.h"
 
 DrawShadowHelper::DrawShadowHelper(QWidget* w, int shadowSize, QObject *parent)
@@ -380,7 +381,14 @@ void DrawShadowHelper::hide()
 void DrawShadowHelper::show()
 {
     m_show = true;
-    QLayout* lay = m_widget->layout();
+//    const char* name = m_widget->metaObject()->className();
+    QLayout* lay = nullptr;
+    if (m_widget->inherits("QMainWindow")){
+        QMainWindow* window = qobject_cast<QMainWindow*>(m_widget);
+        lay = window->centralWidget()->layout();
+    } else {
+        lay = m_widget->layout();
+    }
     if (lay)
         lay->setContentsMargins(m_shadowSize, m_shadowSize, m_shadowSize, m_shadowSize);
 }

@@ -1,7 +1,8 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 #include "head.h"
-#include "subdialog.h"
+#include "dialog.h"
+#include "mainwindow.h"
 
 Widget::Widget(bool resizeEnable,
                bool shadowBorder,
@@ -11,6 +12,11 @@ Widget::Widget(bool resizeEnable,
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    if (resizeEnable == false)
+    {
+        ui->btnMenu_Min->hide();
+        ui->btnMenu_Max->hide();
+    }
     this->initForm();
 }
 
@@ -75,15 +81,31 @@ void Widget::on_btnMenu_Close_clicked()
 
 void Widget::on_pushButton_QDialog_clicked()
 {
+    bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
+    bool shadowBorder = ui->checkBox_shadowBorder->isChecked();
+    bool winNativeEvent = ui->checkBox_winNativeEvent->isChecked();
 
+    Dialog dlg(resizeEnable, shadowBorder, winNativeEvent, this);
+    dlg.exec();
 }
 
 void Widget::on_pushButton_QWidget_clicked()
 {
+    bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
+    bool shadowBorder = ui->checkBox_shadowBorder->isChecked();
+    bool winNativeEvent = ui->checkBox_winNativeEvent->isChecked();
 
+    Widget *w = new Widget(resizeEnable, shadowBorder, winNativeEvent);
+    //w->setWindowModality(Qt::ApplicationModal);
+    w->show();
 }
 
 void Widget::on_pushButton_QMainWindow_clicked()
 {
+    bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
+    bool shadowBorder = ui->checkBox_shadowBorder->isChecked();
+    bool winNativeEvent = ui->checkBox_winNativeEvent->isChecked();
 
+    MainWindow *w = new MainWindow(resizeEnable, shadowBorder, winNativeEvent);
+    w->show();
 }

@@ -19,3 +19,6 @@ include ($$PWD/../core_frameless/core_frameless.pri)
 
 INCLUDEPATH += $$PWD/../core_common
 include ($$PWD/../core_common/core_common.pri)
+
+RESOURCES += \
+    frameless.qrc
