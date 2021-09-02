@@ -3,8 +3,12 @@
 #include "head.h"
 #include "subdialog.h"
 
-Widget::Widget(QWidget *parent)
-    : QFramelessWidget(parent, true), ui(new Ui::Widget)
+Widget::Widget(bool resizeEnable,
+               bool shadowBorder,
+               bool winNativeEvent,
+               QWidget *parent)
+    : QFramelessWidget(parent, resizeEnable, shadowBorder, winNativeEvent)
+    , ui(new Ui::Widget)
 {
     ui->setupUi(this);
     this->initForm();

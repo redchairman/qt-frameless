@@ -13,7 +13,10 @@ class Widget : public QFramelessWidget
     Q_OBJECT
 
 public:
-    explicit Widget(QWidget *parent = 0);
+    explicit Widget(bool resizeEnable = true,
+                    bool shadowBorder = true,
+                    bool winNativeEvent = true,
+                    QWidget *parent = 0);
     ~Widget();
 
 private:

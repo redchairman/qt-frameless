@@ -80,11 +80,6 @@ void Dialog::on_btnMenu_Close_clicked()
     this->close();
 }
 
-void Dialog::on_pushButton_QMainWindow_clicked()
-{
-
-}
-
 void Dialog::on_pushButton_QDialog_clicked()
 {
     bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
@@ -97,5 +92,21 @@ void Dialog::on_pushButton_QDialog_clicked()
 
 void Dialog::on_pushButton_QWidget_clicked()
 {
+    bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
+    bool shadowBorder = ui->checkBox_shadowBorder->isChecked();
+    bool winNativeEvent = ui->checkBox_winNativeEvent->isChecked();
 
+    Widget *w = new Widget(resizeEnable, shadowBorder, winNativeEvent);
+    //w->setWindowModality(Qt::ApplicationModal);
+    w->show();
+}
+
+void Dialog::on_pushButton_QMainWindow_clicked()
+{
+    bool resizeEnable = ui->checkBox_resizeEnable->isChecked();
+    bool shadowBorder = ui->checkBox_shadowBorder->isChecked();
+    bool winNativeEvent = ui->checkBox_winNativeEvent->isChecked();
+
+    MainWindow *w = new MainWindow(resizeEnable, shadowBorder, winNativeEvent);
+    w->show();
 }

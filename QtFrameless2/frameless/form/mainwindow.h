@@ -13,7 +13,10 @@ class MainWindow : public QFramelessMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(bool resizeEnable = true,
+                        bool shadowBorder = true,
+                        bool winNativeEvent = true,
+                        QWidget *parent = 0);
     ~MainWindow();
 
 private:
