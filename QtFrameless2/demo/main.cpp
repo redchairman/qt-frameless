@@ -1,7 +1,8 @@
-﻿#include "quihelper.h"
+﻿#include <QApplication>
 #include "mainwindow.h"
 #include "widget.h"
 #include "dialog.h"
+#include <QFile>
 
 int main(int argc, char *argv[])
 {
@@ -10,9 +11,16 @@ int main(int argc, char *argv[])
 #endif
     QApplication a(argc, argv);
 
-    QUIHelper::setStyle();
-    QUIHelper::setFont(15);
-    QUIHelper::setCode();
+    QString qss;
+    QFile qssFile(":/skin/qss/skin.qss");
+    qssFile.open(QFile::ReadOnly);
+    if (qssFile.isOpen())
+    {
+        qss = QLatin1String(qssFile.readAll());
+        qApp->setStyleSheet(qss);
+        qssFile.close();
+    }
+
 
     //MainWindow w;
     //Widget w;
@@ -23,7 +31,6 @@ int main(int argc, char *argv[])
 #else
     w.resize(800, 550);
 #endif
-    QUIHelper::setFormInCenter(&w);
     w.show();
     return a.exec();
 }

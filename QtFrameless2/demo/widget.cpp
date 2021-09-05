@@ -37,12 +37,12 @@ void Widget::initForm()
     connect(framelessHelper(), SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
 
     //设置样式表
-    QStringList list;
-    list << "#titleBar{background:#BBBBBB;}";
-    list << "#titleBar{border-top-left-radius:8px;border-top-right-radius:8px;}";
-    list << "#widgetMain{border:2px solid #BBBBBB;background:#FFFFFF;}";
-    //list << "#widgetMain{border-bottom-left-radius:8px;border-bottom-right-radius:8px;}";
-    this->setStyleSheet(list.join(""));
+//    QStringList list;
+//    list << "#titleBar{background:#BBBBBB;}";
+//    list << "#titleBar{border-top-left-radius:8px;border-top-right-radius:8px;}";
+//    list << "#widgetMain{border:2px solid #BBBBBB;background:#FFFFFF;}";
+//    //list << "#widgetMain{border-bottom-left-radius:8px;border-bottom-right-radius:8px;}";
+//    this->setStyleSheet(list.join(""));
 }
 
 void Widget::titleDblClick()

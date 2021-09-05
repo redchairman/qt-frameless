@@ -7,20 +7,21 @@ TEMPLATE    = app
 DESTDIR     = $$PWD/../bin
 
 CONFIG      += warn_off
-HEADERS     += head.h
-SOURCES     += main.cpp
+HEADERS     += head.h \
+    dialog.h \
+    mainwindow.h \
+    widget.h
+SOURCES     += main.cpp \
+    dialog.cpp \
+    mainwindow.cpp \
+    widget.cpp
 
-INCLUDEPATH += $$PWD
-INCLUDEPATH += $$PWD/form
-include ($$PWD/form/form.pri)
+INCLUDEPATH += $$PWD/../qframeless
+include ($$PWD/../qframeless/qframeless.pri)
 
-INCLUDEPATH += $$PWD/../core_frameless
-include ($$PWD/../core_frameless/core_frameless.pri)
+RESOURCES += skin/skin.qrc
 
-INCLUDEPATH += $$PWD/../core_common
-include ($$PWD/../core_common/core_common.pri)
-
-RESOURCES += \
-    frameless.qrc \
-    skin/dark/dark.qrc \
-    skin/white/white.qrc
+FORMS += \
+    dialog.ui \
+    mainwindow.ui \
+    widget.ui
