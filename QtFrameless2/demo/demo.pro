@@ -21,4 +21,6 @@ INCLUDEPATH += $$PWD/../core_common
 include ($$PWD/../core_common/core_common.pri)
 
 RESOURCES += \
-    frameless.qrc
+    frameless.qrc \
+    skin/dark/dark.qrc \
+    skin/white/white.qrc

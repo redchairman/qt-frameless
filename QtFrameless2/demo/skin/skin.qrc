@@ -1,5 +1,7 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/skin/dark">
+        <file>logo.png</file>
+        <file>qss/dark.qss</file>
         <file>image/close.png</file>
         <file>image/max_size.png</file>
         <file>image/min_size.png</file>
