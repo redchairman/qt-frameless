@@ -31,7 +31,7 @@ void Dialog::initForm()
     //设置标题栏控件
     //ui->labTitle->setText("无边框窗体示例-支持win、linux、mac等系统 (QQ: 517216493 WX: feiyangqingyun)");
     this->setWindowTitle(ui->label_title->text());
-    this->framelessHelper()->setTitleBar(ui->widget_titleBar);
+    this->framelessHelper()->setTitleBar(ui->widget_caption);
 
     //关联信号
     connect(framelessHelper(), SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
@@ -54,7 +54,13 @@ void Dialog::titleDblClick()
 
 void Dialog::windowStateChange(bool max)
 {
-    ui->btnMenu_Max->setText(max ? "还原" : "最大");
+    if (!max) {
+        ui->btnMenu_Max->setProperty("type", "maxsize");
+    } else {
+        ui->btnMenu_Max->setProperty("type", "restore");
+    }
+    ui->btnMenu_Max->style()->unpolish(ui->btnMenu_Max);
+    ui->btnMenu_Max->style()->polish(ui->btnMenu_Max);
 }
 
 void Dialog::on_btnMenu_Min_clicked()

@@ -1,61 +1,70 @@
 
+/*window icon*/
+QLabel#label_logo{
+        image: url(:/skin/image/logo.png);
+}
+
 /*大标题*/
 QLabel#label_title{
 font-size:15px;
 font-weight:bold;
+color:#FFFFFF;
 }
 
-
 /*title bar widget bottom border*/
+QWidget#widget_titleBar QLabel
+{
+color:#FFFFFF;
+}
+
 QWidget#widget_titleBar
 {
+background:#22cb64;
+
+/*
 border-radius:0px;
 border: 1px solid #79798F;
 border-left: none;
 border-top: none;
 border-right: none;
+*/
 }
 
 /*client widget*/
 QWidget#widget_client
 {
-background:#464655;
+/*border: 1px solid #79798F;
+border-top: none;*/
+background:#FFFFFF;
 }
 
 /**********************
 normal button
 ***********************/
 .QPushButton{
-border:1px solid #79798F;
-border-radius:4px;
-color:#FFFFFF;
-font-size:12px;
-padding-left:10px;
-padding-right:10px;
-background:transparent;/*#464655;*/
-/*min-height:24px;*/
+border-style: none;
+border: 0px;
+color: #FFFFFF;
+padding: 5px;
+border-radius:5px;
+background: #22cb64;
+}
+
+.QPushButton[focusPolicy="0"] {
+border-style: none;
+border: 0px;
+color: #FFFFFF;
+padding: 0px;
+border-radius:3px;
+background: #22cb64;
 }
 
 .QPushButton:hover{
-border:1px solid #1890FF;
-background:#464655;
+background: #47d679
 }
 
 .QPushButton:pressed{
-border:1px solid #1890FF;
-background:#3A3A4A;
-}
-
-.QPushButton:checked{
-color:#1890FF;
-border:1px solid #1890FF;
-background:#464655;
-}
-
-.QPushButton:disabled{
-color:#999999;
-border:1px solid #79798F;
-background:#464655;
+background: #13a34f;
 }
 
 /***********************
@@ -105,24 +114,28 @@ QPushButton[type="minsize"]:hover,
 QPushButton[type="maxsize"]:hover,
 QPushButton[type="restore"]:hover,
 QPushButton[titlebar_button=true]:hover{
-background:#4E5C6D;
+background:#47d679;
+border-radius:0px;
 }
 
 QPushButton[type="minsize"]:pressed,
 QPushButton[type="maxsize"]:pressed,
 QPushButton[type="restore"]:pressed,
 QPushButton[titlebar_button=true]:pressed{
-background:#79798F;
+background:#13a34f;
+border-radius:0px;
 }
 
 QPushButton[type="close"]:hover{
 color:#ffffff;
-background:#F5222D;
+background:#FF5439;
+border-radius:0px;
 border-image: url(:/skin/image/close.png);
 }
 
 QPushButton[type="close"]:pressed{
 color:#ffffff;
-background:#F1707A;
+background:#E04A32;
+border-radius:0px;
 border-image: url(:/skin/image/close.png);
 }

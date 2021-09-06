@@ -1,10 +1,10 @@
 <RCC>
     <qresource prefix="/skin">
-        <file>logo.png</file>
         <file>image/close.png</file>
         <file>image/max_size.png</file>
         <file>image/min_size.png</file>
         <file>image/restore.png</file>
         <file>qss/skin.qss</file>
+        <file>image/logo.png</file>
     </qresource>
 </RCC>

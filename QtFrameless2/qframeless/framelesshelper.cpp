@@ -422,10 +422,17 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
 
             //识别标题栏拖动产生半屏全屏效果
             if (m_titleBar != 0 && m_titleBar->rect().contains(pos)) {
-                QWidget *child = m_titleBar->childAt(pos);
-                if (!child) {
-                    *result = HTCAPTION;
-                    return true;
+                QPoint titleBarTopLeft = m_titleBar->mapTo(m_widget, QPoint(0, 0));
+                QRect rcTitleBar = QRect(titleBarTopLeft, QSize(m_titleBar->width(), m_titleBar->height()));
+                if (rcTitleBar.contains(pos))
+                {
+                    QPoint posInTitleBar = m_titleBar->mapFrom(m_widget, pos);
+                    QWidget *child = m_titleBar->childAt(posInTitleBar);
+                    if (child == nullptr || !child->inherits("QAbstractButton"))
+                    {
+                        *result = HTCAPTION;
+                        return true;
+                    }
                 }
             }
 
