@@ -1,7 +1,6 @@
 ﻿#ifndef DIALOG_H
 #define DIALOG_H
 
-#include "framelessdialog.h"
 #include "qframelessdialog.h"
 namespace Ui {
 class Dialog;

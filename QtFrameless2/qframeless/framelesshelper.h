@@ -70,11 +70,13 @@ public:
     void setMoveEnable(bool moveEnable);
     void setResizeEnable(bool resizeEnable);
 
-    //设置标题栏控件
+    //设置标题栏窗体
     void setTitleBar(QWidget *titleBar);
 
 signals:
+    //双击标题栏信号，用户需要在该信号槽函数中进行最大化或还原动作
     void titleDblClick();
+    //窗体状态变更，max表示是否为最大化，用户需要在该信号槽函数中进行最大化按钮图标切换
     void windowStateChange(bool max);
 };
 

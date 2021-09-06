@@ -334,7 +334,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == m_widget) {
-        //qDebug() << event;
+        qDebug() << event;
         if (event->type() == QEvent::WindowStateChange) {
             doWindowStateChange(event);
         } else if (event->type() == QEvent::Show) {

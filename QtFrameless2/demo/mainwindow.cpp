@@ -28,21 +28,12 @@ MainWindow::~MainWindow()
 void MainWindow::initForm()
 {
     //设置标题栏控件
-    ui->labTitle->setText("无边框窗体示例-支持");
-    this->setWindowTitle(ui->labTitle->text());
-    this->framelessHelper()->setTitleBar(ui->labTitle);
+    this->setWindowTitle(ui->label_title->text());
+    this->framelessHelper()->setTitleBar(ui->widget_titleBar);
 
     //关联信号
     connect(framelessHelper(), SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
     connect(framelessHelper(), SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
-
-    //设置样式表
-//    QStringList list;
-//    list << "#titleBar{background:#BBBBBB;}";
-//    list << "#titleBar{border-top-left-radius:8px;border-top-right-radius:8px;}";
-//    list << "#widgetMain{border:2px solid #BBBBBB;background:#FFFFFF;}";
-//    //list << "#widgetMain{border-bottom-left-radius:8px;border-bottom-right-radius:8px;}";
-//    this->setStyleSheet(list.join(""));
 }
 
 void MainWindow::titleDblClick()
@@ -52,7 +43,13 @@ void MainWindow::titleDblClick()
 
 void MainWindow::windowStateChange(bool max)
 {
-    ui->btnMenu_Max->setText(max ? "还原" : "最大");
+    if (!max) {
+        ui->btnMenu_Max->setProperty("type", "maxsize");
+    } else {
+        ui->btnMenu_Max->setProperty("type", "restore");
+    }
+    ui->btnMenu_Max->style()->unpolish(ui->btnMenu_Max);
+    ui->btnMenu_Max->style()->polish(ui->btnMenu_Max);
 }
 
 void MainWindow::on_btnMenu_Min_clicked()
@@ -67,11 +64,13 @@ void MainWindow::on_btnMenu_Max_clicked()
 {
     if (this->isMaximized()) {
         this->showNormal();
-        ui->btnMenu_Max->setText("最大");
+        ui->btnMenu_Max->setProperty("type", "maxsize");
     } else {
         this->showMaximized();
-        ui->btnMenu_Max->setText("还原");
+        ui->btnMenu_Max->setProperty("type", "restore");
     }
+    ui->btnMenu_Max->style()->unpolish(ui->btnMenu_Max);
+    ui->btnMenu_Max->style()->polish(ui->btnMenu_Max);
 }
 
 void MainWindow::on_btnMenu_Close_clicked()

@@ -98,7 +98,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>无边框窗体示例 (WX: 18971631501)</string>
+              <string>QDialog无边框窗体示例 (WX: 18971631501)</string>
              </property>
             </widget>
            </item>
