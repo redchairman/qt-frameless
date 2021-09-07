@@ -47,8 +47,10 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
     m_flags = m_widget->windowFlags();
     m_titleBar = 0;
 
-    //设置无边框属性
-    m_widget->setWindowFlags(m_flags | Qt::FramelessWindowHint);
+    //设置无边框属性，且保留任务栏图标点击切换最小化
+    m_widget->setWindowFlags(m_flags | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint |
+                             Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+
     //安装事件过滤器识别拖动
     m_widget->installEventFilter(this);
 
