@@ -23,14 +23,14 @@ int main(int argc, char *argv[])
 
 
     //MainWindow w;
-    //Widget w;
-    Dialog w(true, true);
+    Widget w(true, true);
+    //Dialog w(true, true);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-    w.resize(800, 600);
-#else
-    w.resize(800, 550);
-#endif
+//#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+//    w.resize(800, 600);
+//#else
+//    w.resize(800, 550);
+//#endif
     w.show();
     return a.exec();
 }

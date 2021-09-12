@@ -48,8 +48,19 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
     m_titleBar = 0;
 
     //设置无边框属性，且保留任务栏图标点击切换最小化
-    m_widget->setWindowFlags(m_flags | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint |
-                             Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+    if (m_widget->inherits("QMainWindow")){
+        qDebug() << "QMainWindow: " << m_widget->windowFlags();
+    } else if (m_widget->inherits("QDialog")){
+        qDebug() << "QDialog: " << m_widget->windowFlags();
+    } else if (m_widget->inherits("QWidget")){
+        qDebug() << "QWidget: " << m_widget->windowFlags();
+    }
+
+#ifdef Q_OS_WIN
+    m_widget->setWindowFlags((m_widget->windowFlags() | Qt::FramelessWindowHint));
+#else
+    m_widget->setWindowFlags((m_widget->windowFlags() | Qt::FramelessWindowHint) & (~Qt::WindowMinMaxButtonsHint));
+#endif
 
     //安装事件过滤器识别拖动
     m_widget->installEventFilter(this);
@@ -220,7 +231,13 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             QRect normalRect = m_widget->normalGeometry();
             float fx = (float)point.x() / (float)m_widget->rect().width();
             int offsetY = point.y();
+#ifdef Q_OS_WIN
             emit titleDblClick();
+#else
+            qDebug() << "normalRect: " << normalRect;
+            m_widget->setGeometry(normalRect);
+            m_widget->setWindowState(Qt::WindowNoState);
+#endif
 
             int x1 = fx * (float)normalRect.width();
             x1 = point.x() - x1;
@@ -235,6 +252,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             //重新计算移动起点和大小
             m_mousePoint = m_widget->mapFromGlobal(point);
             m_mouseRect = m_widget->geometry();
+             qDebug() << "normalRect2: " << m_mouseRect;
             m_mousePressed = true;
             m_pressedArea[2] = false;
         }
@@ -336,7 +354,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == m_widget) {
-        qDebug() << event;
+        //qDebug() << event;
         if (event->type() == QEvent::WindowStateChange) {
             doWindowStateChange(event);
         } else if (event->type() == QEvent::Show) {
