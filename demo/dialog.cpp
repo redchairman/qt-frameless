@@ -55,19 +55,16 @@ void Dialog::windowStateChange(bool max)
 
 void Dialog::on_btnMenu_Min_clicked()
 {
-#ifdef Q_OS_MACOS
-    this->setWindowFlags(this->windowFlags() & ~Qt::FramelessWindowHint);
-#endif
-    this->showMinimized();
+    framelessHelper()->showMinimized();
 }
 
 void Dialog::on_btnMenu_Max_clicked()
 {
-    if (this->isMaximized()) {
-        this->showNormal();
+    if (framelessHelper()->isMaximized()) {
+        framelessHelper()->showNormal();
         ui->btnMenu_Max->setProperty("type", "maxsize");
     } else {
-        this->showMaximized();
+        framelessHelper()->showMaximized();
         ui->btnMenu_Max->setProperty("type", "restore");
     }
     ui->btnMenu_Max->style()->unpolish(ui->btnMenu_Max);

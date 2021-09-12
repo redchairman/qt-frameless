@@ -512,4 +512,34 @@ void FramelessHelper::setTitleBar(QWidget *titleBar)
     this->m_titleBar->installEventFilter(this);
 }
 
+void FramelessHelper::showMinimized()
+{
+    if (m_widget)
+    {
+#ifdef Q_OS_MACOS
+        m_widget->setWindowFlags(m_widget->windowFlags() & ~Qt::FramelessWindowHint);
+#endif
+        m_widget->showMinimized();
+    }
+}
+
+bool FramelessHelper::isMaximized()
+{
+    if (m_widget)
+        return m_widget->isMaximized();
+    return false;
+}
+
+void FramelessHelper::showMaximized()
+{
+    if (m_widget)
+        m_widget->showMaximized();
+}
+
+void FramelessHelper::showNormal()
+{
+    if (m_widget)
+        m_widget->showNormal();
+}
+
 
