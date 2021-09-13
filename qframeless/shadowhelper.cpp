@@ -387,7 +387,6 @@ void DrawShadowHelper::hide()
 void DrawShadowHelper::show()
 {
     m_show = true;
-//    const char* name = m_widget->metaObject()->className();
     QLayout* lay = nullptr;
     if (m_widget->inherits("QMainWindow")){
         QMainWindow* window = qobject_cast<QMainWindow*>(m_widget);

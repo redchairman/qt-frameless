@@ -146,7 +146,7 @@ void FramelessHelper::doWindowStateChange(QEvent *event)
     updateDrawShadowState();
 
     //发出最大化最小化等改变事件,以便界面上更改对应的信息比如右上角图标和文字
-    emit windowStateChange(!m_moveEnable);
+    emit maximizedChanged(!m_moveEnable);
 
     //解决mac系统上无边框最小化失效的BUG
 #ifdef Q_OS_MACOS
@@ -227,9 +227,6 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 
         //根据按下处的位置判断是否是移动控件还是拉伸控件
         if (m_moveEnable && m_mousePressed) {
-            qDebug() << "x: " << m_widget->x() + offsetX;
-            qDebug() << "y: " << m_widget->y() + offsetY;
-
             m_widget->move(m_widget->x() + offsetX, m_widget->y() + offsetY);
         }
 
@@ -241,7 +238,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             float fx = (float)point.x() / (float)m_widget->rect().width();
             int offsetY = point.y();
 #ifdef Q_OS_WIN
-            emit titleDblClick();
+            maximizedNormalSwitch();
 #else
             m_widget->setWindowState(Qt::WindowNoState);
             m_widget->setGeometry(normalRect);
@@ -355,7 +352,17 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             m_pressedArea[i] = false;
         }
     }
+}
 
+void FramelessHelper::maximizedNormalSwitch()
+{
+    if (isMaximized()) {
+        showNormal();
+        emit maximizedChanged(false);
+    } else {
+        showMaximized();
+        emit maximizedChanged(true);
+    }
 }
 
 bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
@@ -372,14 +379,16 @@ bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
     } else if (watched == m_titleBar) {
         //双击标题栏发出双击信号给主界面
         //下面的 *result = HTCAPTION; 标志位也会自动识别双击标题栏
-#ifdef Q_OS_WIN
-        if (m_winNativeEvent == false)
-#endif
-        {
-            if (event->type() == QEvent::MouseButtonDblClick) {
-                emit titleDblClick();
-            } else if (event->type() == QEvent::NonClientAreaMouseButtonDblClick) {
-                emit titleDblClick();
+        if (m_resizeEnable){
+    #ifdef Q_OS_WIN
+            if (m_winNativeEvent == false)
+    #endif
+            {
+                if (event->type() == QEvent::MouseButtonDblClick) {
+                    maximizedNormalSwitch();
+                } else if (event->type() == QEvent::NonClientAreaMouseButtonDblClick) {
+                    maximizedNormalSwitch();
+                }
             }
         }
     }

@@ -77,11 +77,9 @@ public:
     void showMaximized();
     void showNormal();
     bool isMaximized();
+public slots:
+    void maximizedNormalSwitch();
 signals:
-    //双击标题栏信号，用户需要在该信号槽函数中进行最大化或还原动作
-    void titleDblClick();
-    //窗体状态变更，max表示是否为最大化，用户需要在该信号槽函数中进行最大化按钮图标切换
-    void windowStateChange(bool max);
     void maximizedChanged(bool max);
 };
 
