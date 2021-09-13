@@ -57,9 +57,13 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
     }
 
 #ifdef Q_OS_WIN
-    m_widget->setWindowFlags((m_widget->windowFlags() | Qt::FramelessWindowHint));
+    m_widget->setWindowFlags ((m_widget->windowFlags())
+                                            | Qt::FramelessWindowHint);
 #else
-    m_widget->setWindowFlags((m_widget->windowFlags() | Qt::FramelessWindowHint) & (~Qt::WindowMinMaxButtonsHint));
+    m_widget->setWindowFlags ((m_widget->windowFlags() & (~Qt::WindowMinMaxButtonsHint) & (~Qt::Dialog))
+                                            | Qt::FramelessWindowHint | Qt::Window);
+
+    qDebug() << "windowFlags: " << m_widget->windowFlags();
 #endif
 
     //安装事件过滤器识别拖动
@@ -168,6 +172,8 @@ void FramelessHelper::doResizeEvent(QEvent *event)
         return;
 #endif
     if (event->type() == QEvent::Resize) {
+        QResizeEvent *resizeEvent = (QResizeEvent *)event;
+        qDebug() << resizeEvent;
         //重新计算八个描点的区域,描点区域的作用还有就是计算鼠标坐标是否在某一个区域内
         int width = m_widget->width();
         int height = m_widget->height();
@@ -221,6 +227,9 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 
         //根据按下处的位置判断是否是移动控件还是拉伸控件
         if (m_moveEnable && m_mousePressed) {
+            qDebug() << "x: " << m_widget->x() + offsetX;
+            qDebug() << "y: " << m_widget->y() + offsetY;
+
             m_widget->move(m_widget->x() + offsetX, m_widget->y() + offsetY);
         }
 
@@ -234,12 +243,11 @@ void FramelessHelper::doResizeEvent(QEvent *event)
 #ifdef Q_OS_WIN
             emit titleDblClick();
 #else
-            qDebug() << "normalRect: " << normalRect;
-            m_widget->setGeometry(normalRect);
             m_widget->setWindowState(Qt::WindowNoState);
+            m_widget->setGeometry(normalRect);
 #endif
 
-            int x1 = fx * (float)normalRect.width();
+            int x1 = (int)(fx * (float)normalRect.width());
             x1 = point.x() - x1;
             int y1 = point.y() - offsetY;
             //点击顶部锚点时候，必须将y坐标向下移动一点，这样窗口还原后，鼠标不会继续触发顶部锚点
@@ -252,7 +260,6 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             //重新计算移动起点和大小
             m_mousePoint = m_widget->mapFromGlobal(point);
             m_mouseRect = m_widget->geometry();
-             qDebug() << "normalRect2: " << m_mouseRect;
             m_mousePressed = true;
             m_pressedArea[2] = false;
         }

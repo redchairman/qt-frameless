@@ -373,7 +373,13 @@ int DrawShadowHelper::shadowSize()
 void DrawShadowHelper::hide()
 {
     m_show = false;
-    QLayout* lay = m_widget->layout();
+    QLayout* lay = nullptr;
+    if (m_widget->inherits("QMainWindow")){
+        QMainWindow* window = qobject_cast<QMainWindow*>(m_widget);
+        lay = window->centralWidget()->layout();
+    } else {
+        lay = m_widget->layout();
+    }
     if (lay)
         lay->setContentsMargins(0, 0, 0, 0);
 }
