@@ -19,11 +19,9 @@ public:
 
 private:
     Ui::Dialog *ui;
-
-private slots:
     void initForm();
-    void titleDblClick();
-    void windowStateChange(bool max);
+private slots:
+    void maximizedChanged(bool max);
 
 private slots:
     void on_btnMenu_Min_clicked();

@@ -20,11 +20,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
-private slots:
     void initForm();
-    void titleDblClick();
-    void windowStateChange(bool max);
+private slots:
+    void maximizedChanged(bool max);
 
 private slots:
     void on_btnMenu_Min_clicked();

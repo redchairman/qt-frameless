@@ -32,16 +32,10 @@ void Widget::initForm()
     this->framelessHelper()->setTitleBar(ui->widget_titleBar);
 
     //关联信号
-    connect(framelessHelper(), SIGNAL(titleDblClick()), this, SLOT(titleDblClick()));
-    connect(framelessHelper(), SIGNAL(windowStateChange(bool)), this, SLOT(windowStateChange(bool)));
+    connect(framelessHelper(), SIGNAL(maximizedChanged(bool)), this, SLOT(maximizedChanged(bool)));
 }
 
-void Widget::titleDblClick()
-{
-    on_btnMenu_Max_clicked();
-}
-
-void Widget::windowStateChange(bool max)
+void Widget::maximizedChanged(bool max)
 {
     if (!max) {
         ui->btnMenu_Max->setProperty("type", "maxsize");
