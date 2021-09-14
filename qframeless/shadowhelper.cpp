@@ -48,11 +48,6 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
     QImage image(size, size, QImage::Format_ARGB32);
     image.fill(QColor(Qt::black));
 
-#if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-    image.setColor(0, qRgba(borderR, borderG, borderB, 255));
-    QMap<int, int> alphaColorMap;
-#endif
-
     //
     double f = activated ? 4.0 : 1.0;
     //
@@ -65,18 +60,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
             int alpha = MakeAlpha(i, f, shadowSize);
 
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-                alphaColorMap[alpha] = colorIndex;
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -89,17 +73,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
             int i = szImage.width() - x;
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -111,17 +85,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
         for (int x = shadowSize; x < szImage.width() - shadowSize; x++) {
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -134,17 +98,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
         for (int x = shadowSize; x < szImage.width() - shadowSize; x++) {
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -165,17 +119,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
             //
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -194,17 +138,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
             //
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -222,17 +156,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
             //
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
@@ -250,17 +174,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
             //
             int alpha = MakeAlpha(i, f, shadowSize);
 #if (QT_VERSION <= QT_VERSION_CHECK(5,6,0))
-            int colorIndex = -1;
-            QMap<int, int>::iterator it = alphaColorMap.find(alpha);
-            if (it == alphaColorMap.end())
-            {
-                colorIndex = image.colorCount();
-                image.setColor(colorIndex, qRgba(0, 0, 0, alpha));
-            }
-            else{
-                colorIndex = it.value();
-            }
-            image.setPixel(x, y, colorIndex);
+            image.setPixel(x, y, QColor(0, 0, 0, alpha).rgba());
 #else
             image.setPixelColor(x, y, QColor(0, 0, 0, alpha));
 #endif
