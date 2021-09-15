@@ -1,5 +1,5 @@
-﻿#ifndef SHADOWHELPER_H
-#define SHADOWHELPER_H
+﻿#ifndef QSHADOWHELPER_H
+#define QSHADOWHELPER_H
 
 #include <QWidget>
 #include <QDialog>
@@ -46,15 +46,15 @@ private:
 };
 #endif
 
-class DrawShadowHelper : public QObject
+class QDrawShadowHelper : public QObject
 {
     Q_OBJECT
 
     //Q_PROPERTY(QColor clientBgColor READ getClientBgColor WRITE setClientBgColor)
 
 public:
-    explicit DrawShadowHelper(QWidget* w, int shadowSize = 10, QObject *parent = 0);
-    ~DrawShadowHelper();
+    explicit QDrawShadowHelper(QWidget* w, int shadowSize = 10, QObject *parent = 0);
+    ~QDrawShadowHelper();
     void setShadowSize(int shadowSize);
     void paint(QPainter* p);
     int shadowSize();
@@ -81,4 +81,4 @@ private:
     bool m_show;
 };
 
-#endif // SHADOWHELPER_H
+#endif // QSHADOWHELPER_H

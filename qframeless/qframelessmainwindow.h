@@ -2,16 +2,16 @@
 #define QFRAMELESSMAINWINDOW_H
 
 #include <QMainWindow>
-#include "framelesshelper.h"
+#include "qframelesshelper.h"
 
-class FramelessHelper;
+class QFramelessHelper;
 class QFramelessMainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit QFramelessMainWindow(QWidget *parent = 0, bool resizeEnable = true, bool shadowBorder = true, bool winNativeEvent = true);
 
-    FramelessHelper *framelessHelper();
+    QFramelessHelper *framelessHelper();
 
 protected:
     //拦截系统事件用于修复系统休眠后唤醒程序的BUG
@@ -31,7 +31,7 @@ protected:
     virtual void paintEvent(QPaintEvent *e);
 
 private:
-    FramelessHelper * m_framelessHelper;
+    QFramelessHelper * m_framelessHelper;
 };
 
 #endif // QFRAMELESSMAINWINDOW_H

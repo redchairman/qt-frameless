@@ -1,15 +1,15 @@
-﻿#ifndef FRAMELESSHELPER_H
-#define FRAMELESSHELPER_H
+﻿#ifndef QFRAMELESSHELPER_H
+#define QFRAMELESSHELPER_H
 
 #include <QObject>
 #include <QWidget>
 
-class DrawShadowHelper;
-class FramelessHelper : public QObject
+class QDrawShadowHelper;
+class QFramelessHelper : public QObject
 {
     Q_OBJECT
 public:
-    explicit FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorder = true, bool winNativeEvent = true, QObject *parent = 0);
+    explicit QFramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorder = true, bool winNativeEvent = true, QObject *parent = 0);
 
 protected:
     //窗体显示的时候触发
@@ -62,7 +62,7 @@ private:
     bool m_winNativeEvent;
 
     //自绘制阴影边框
-    DrawShadowHelper* m_drawShadow;
+    QDrawShadowHelper* m_drawShadow;
 
 public:
     //设置边距+可拖动+可拉伸
@@ -78,9 +78,9 @@ public:
     void showNormal();
     bool isMaximized();
 public slots:
-    void maximizedNormalSwitch();
+    void switchMaximizedNormal();
 signals:
     void maximizedChanged(bool max);
 };
 
-#endif // FRAMELESSHELPER_H
+#endif // QFRAMELESSHELPER_H

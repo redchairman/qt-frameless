@@ -4,10 +4,10 @@ QFramelessDialog::QFramelessDialog(QWidget *parent, bool resizeEnable, bool shad
     : QDialog(parent)
     , m_framelessHelper(0)
 {
-    m_framelessHelper = new FramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this);
+    m_framelessHelper = new QFramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this);
 }
 
-FramelessHelper *QFramelessDialog::framelessHelper()
+QFramelessHelper *QFramelessDialog::framelessHelper()
 {
     return m_framelessHelper;
 }

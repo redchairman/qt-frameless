@@ -4,10 +4,10 @@ QFramelessMainWindow::QFramelessMainWindow(QWidget *parent, bool resizeEnable, b
     : QMainWindow(parent)
     , m_framelessHelper(0)
 {    
-    m_framelessHelper = new FramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this);
+    m_framelessHelper = new QFramelessHelper(this, resizeEnable, shadowBorder, winNativeEvent, this);
 }
 
-FramelessHelper *QFramelessMainWindow::framelessHelper()
+QFramelessHelper *QFramelessMainWindow::framelessHelper()
 {
     return m_framelessHelper;
 }

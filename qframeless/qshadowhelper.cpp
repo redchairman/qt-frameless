@@ -2,9 +2,9 @@
 #include <QPainter>
 #include <QMap>
 #include <QMainWindow>
-#include "shadowhelper.h"
+#include "qshadowhelper.h"
 
-DrawShadowHelper::DrawShadowHelper(QWidget* w, int shadowSize, QObject *parent)
+QDrawShadowHelper::QDrawShadowHelper(QWidget* w, int shadowSize, QObject *parent)
     : QObject(parent)
     , m_shadowSize(shadowSize)
     , m_clientBorderColor(QColor("#C9C9C9"))
@@ -17,12 +17,12 @@ DrawShadowHelper::DrawShadowHelper(QWidget* w, int shadowSize, QObject *parent)
     setShadowSize(m_shadowSize);
 }
 
-DrawShadowHelper::~DrawShadowHelper()
+QDrawShadowHelper::~QDrawShadowHelper()
 {
 
 }
 
-void DrawShadowHelper::setShadowSize(int shadowSize)
+void QDrawShadowHelper::setShadowSize(int shadowSize)
 {
     m_shadowSize = shadowSize;
     if (!m_img.isNull()) {
@@ -42,7 +42,7 @@ inline unsigned char MakeAlpha(int i, double f, int nSize)
     return int(fabs((i * f) * f2));
 }
 
-QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
+QImage QDrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
 {
     int size = shadowSize * 2 + 10;
     QImage image(size, size, QImage::Format_ARGB32);
@@ -183,7 +183,7 @@ QImage DrawShadowHelper::makeShadowImage(int shadowSize, bool activated)
     return image;
 }
 
-bool DrawShadowHelper::splitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArrayCount)
+bool QDrawShadowHelper::splitRect(const QRect &rcSrc, int shadowSize, QRect *parrayRect, int nArrayCount)
 {
     Q_ASSERT(nArrayCount == 9);
     //
@@ -224,12 +224,12 @@ bool DrawShadowHelper::splitRect(const QRect &rcSrc, int shadowSize, QRect *parr
     return true;
 }
 
-QColor DrawShadowHelper::getClientBorderColor() const
+QColor QDrawShadowHelper::getClientBorderColor() const
 {
     return m_clientBorderColor;
 }
 
-void DrawShadowHelper::setClientBorderColor(const QColor &color)
+void QDrawShadowHelper::setClientBorderColor(const QColor &color)
 {
     if (m_clientBorderColor != color) {
         m_clientBorderColor = color;
@@ -238,7 +238,7 @@ void DrawShadowHelper::setClientBorderColor(const QColor &color)
     }
 }
 
-void DrawShadowHelper::paint(QPainter *p)
+void QDrawShadowHelper::paint(QPainter *p)
 {
     p->save();
     if (m_shadowSize > 0 && m_show)
@@ -279,12 +279,12 @@ void DrawShadowHelper::paint(QPainter *p)
     p->restore();
 }
 
-int DrawShadowHelper::shadowSize()
+int QDrawShadowHelper::shadowSize()
 {
     return m_shadowSize;
 }
 
-void DrawShadowHelper::hide()
+void QDrawShadowHelper::hide()
 {
     m_show = false;
     QLayout* lay = nullptr;
@@ -298,7 +298,7 @@ void DrawShadowHelper::hide()
         lay->setContentsMargins(0, 0, 0, 0);
 }
 
-void DrawShadowHelper::show()
+void QDrawShadowHelper::show()
 {
     m_show = true;
     QLayout* lay = nullptr;

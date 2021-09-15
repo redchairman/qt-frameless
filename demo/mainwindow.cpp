@@ -48,23 +48,12 @@ void MainWindow::maximizedChanged(bool max)
 
 void MainWindow::on_btnMenu_Min_clicked()
 {
-#ifdef Q_OS_MACOS
-    this->setWindowFlags(this->windowFlags() & ~Qt::FramelessWindowHint);
-#endif
-    this->showMinimized();
+    framelessHelper()->showMinimized();
 }
 
 void MainWindow::on_btnMenu_Max_clicked()
 {
-    if (this->isMaximized()) {
-        this->showNormal();
-        ui->btnMenu_Max->setProperty("type", "maxsize");
-    } else {
-        this->showMaximized();
-        ui->btnMenu_Max->setProperty("type", "restore");
-    }
-    ui->btnMenu_Max->style()->unpolish(ui->btnMenu_Max);
-    ui->btnMenu_Max->style()->polish(ui->btnMenu_Max);
+    framelessHelper()->switchMaximizedNormal();
 }
 
 void MainWindow::on_btnMenu_Close_clicked()

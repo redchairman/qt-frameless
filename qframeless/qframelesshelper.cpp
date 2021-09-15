@@ -1,8 +1,8 @@
-﻿#include "framelesshelper.h"
+﻿#include "qframelesshelper.h"
 #include "qdatetime.h"
 #include "qevent.h"
 #include "qdebug.h"
-#include "shadowhelper.h"
+#include "Qshadowhelper.h"
 #include <QPainter>
 #ifdef Q_OS_WIN
 #include <QApplication>
@@ -14,7 +14,7 @@
 
 #define TIMEMS qPrintable(QTime::currentTime().toString("HH:mm:ss zzz"))
 
-FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorder, bool winNativeEvent, QObject *parent)
+QFramelessHelper::QFramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorder, bool winNativeEvent, QObject *parent)
     : QObject(parent)
     , m_widget(w)
     , m_resizeEnable(resizeEnable)
@@ -94,13 +94,13 @@ FramelessHelper::FramelessHelper(QWidget* w, bool resizeEnable, bool shadowBorde
     {
         m_widget->setAttribute(Qt::WA_Hover, true);
         if (m_shadowBorder){
-            m_drawShadow = new DrawShadowHelper(m_widget, 10, this);
+            m_drawShadow = new QDrawShadowHelper(m_widget, 10, this);
             setPadding(m_padding + 5);
         }
     }
 }
 
-void FramelessHelper::paintEvent(QPaintEvent *event)
+void QFramelessHelper::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
     QPainter painter(m_widget);
@@ -110,7 +110,7 @@ void FramelessHelper::paintEvent(QPaintEvent *event)
     painter.restore();
 }
 
-void FramelessHelper::doShowEvent(QEvent *event)
+void QFramelessHelper::doShowEvent(QEvent *event)
 {
     Q_UNUSED(event)
     //解决有时候窗体重新显示的时候假死不刷新的BUG
@@ -118,7 +118,7 @@ void FramelessHelper::doShowEvent(QEvent *event)
     updateDrawShadowState();
 }
 
-void FramelessHelper::updateDrawShadowState()
+void QFramelessHelper::updateDrawShadowState()
 {
     if (m_drawShadow)
     {
@@ -131,7 +131,7 @@ void FramelessHelper::updateDrawShadowState()
     }
 }
 
-void FramelessHelper::doWindowStateChange(QEvent *event)
+void QFramelessHelper::doWindowStateChange(QEvent *event)
 {
     Q_UNUSED(event)
     //非最大化才能移动和拖动大小
@@ -163,7 +163,7 @@ void FramelessHelper::doWindowStateChange(QEvent *event)
 #endif
 }
 
-void FramelessHelper::doResizeEvent(QEvent *event)
+void QFramelessHelper::doResizeEvent(QEvent *event)
 {
     //非win系统的无边框拉伸,win系统上已经采用了nativeEvent来处理拉伸
     //为何不统一用计算的方式因为在win上用这个方式往左拉伸会发抖妹的
@@ -238,7 +238,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
             float fx = (float)point.x() / (float)m_widget->rect().width();
             int offsetY = point.y();
 #ifdef Q_OS_WIN
-            maximizedNormalSwitch();
+            switchMaximizedNormal();
 #else
             m_widget->setWindowState(Qt::WindowNoState);
             m_widget->setGeometry(normalRect);
@@ -354,7 +354,7 @@ void FramelessHelper::doResizeEvent(QEvent *event)
     }
 }
 
-void FramelessHelper::maximizedNormalSwitch()
+void QFramelessHelper::switchMaximizedNormal()
 {
     if (isMaximized()) {
         showNormal();
@@ -365,7 +365,7 @@ void FramelessHelper::maximizedNormalSwitch()
     }
 }
 
-bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
+bool QFramelessHelper::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == m_widget) {
         //qDebug() << event;
@@ -385,9 +385,9 @@ bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
     #endif
             {
                 if (event->type() == QEvent::MouseButtonDblClick) {
-                    maximizedNormalSwitch();
+                    switchMaximizedNormal();
                 } else if (event->type() == QEvent::NonClientAreaMouseButtonDblClick) {
-                    maximizedNormalSwitch();
+                    switchMaximizedNormal();
                 }
             }
         }
@@ -399,7 +399,7 @@ bool FramelessHelper::eventFilter(QObject *watched, QEvent *event)
 #if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
 bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
 #else
-bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, long *result)
+bool QFramelessHelper::nativeEvent(const QByteArray &eventType, void *message, long *result)
 #endif
 {
     if (eventType == "windows_generic_MSG") {
@@ -507,28 +507,28 @@ bool FramelessHelper::nativeEvent(const QByteArray &eventType, void *message, lo
     return false;
 }
 
-void FramelessHelper::setPadding(int padding)
+void QFramelessHelper::setPadding(int padding)
 {
     this->m_padding = padding;
 }
 
-void FramelessHelper::setMoveEnable(bool moveEnable)
+void QFramelessHelper::setMoveEnable(bool moveEnable)
 {
     this->m_moveEnable = moveEnable;
 }
 
-void FramelessHelper::setResizeEnable(bool resizeEnable)
+void QFramelessHelper::setResizeEnable(bool resizeEnable)
 {
     this->m_resizeEnable = resizeEnable;
 }
 
-void FramelessHelper::setTitleBar(QWidget *titleBar)
+void QFramelessHelper::setTitleBar(QWidget *titleBar)
 {
     this->m_titleBar = titleBar;
     this->m_titleBar->installEventFilter(this);
 }
 
-void FramelessHelper::showMinimized()
+void QFramelessHelper::showMinimized()
 {
     if (m_widget)
     {
@@ -539,20 +539,20 @@ void FramelessHelper::showMinimized()
     }
 }
 
-bool FramelessHelper::isMaximized()
+bool QFramelessHelper::isMaximized()
 {
     if (m_widget)
         return m_widget->isMaximized();
     return false;
 }
 
-void FramelessHelper::showMaximized()
+void QFramelessHelper::showMaximized()
 {
     if (m_widget)
         m_widget->showMaximized();
 }
 
-void FramelessHelper::showNormal()
+void QFramelessHelper::showNormal()
 {
     if (m_widget)
         m_widget->showNormal();

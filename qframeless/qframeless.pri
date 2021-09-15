@@ -1,13 +1,13 @@
 HEADERS += \
-    $$PWD/framelesshelper.h \
     $$PWD/qframelessdialog.h \
+    $$PWD/qframelesshelper.h \
     $$PWD/qframelessmainwindow.h \
     $$PWD/qframelesswidget.h \
-    $$PWD/shadowhelper.h
+    $$PWD/qshadowhelper.h
 
 SOURCES += \
-    $$PWD/framelesshelper.cpp \
     $$PWD/qframelessdialog.cpp \
+    $$PWD/qframelesshelper.cpp \
     $$PWD/qframelessmainwindow.cpp \
     $$PWD/qframelesswidget.cpp \
-    $$PWD/shadowhelper.cpp
+    $$PWD/qshadowhelper.cpp
