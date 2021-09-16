@@ -73,11 +73,11 @@ public:
     //设置标题栏窗体
     void setTitleBar(QWidget *titleBar);
 
+    bool isMaximized();
+public slots:
     void showMinimized();
     void showMaximized();
     void showNormal();
-    bool isMaximized();
-public slots:
     void switchMaximizedNormal();
 signals:
     void maximizedChanged(bool max);
