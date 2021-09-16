@@ -32,7 +32,7 @@ QFramelessHelper::QFramelessHelper(QWidget* w, bool resizeEnable, bool shadowBor
 #else
     m_winNativeEvent = false;
 #endif
-    m_drawShadow = nullptr;
+    m_drawShadow = 0;
 
     m_mousePressed = false;
     m_mousePoint = QPoint(0, 0);
@@ -85,7 +85,17 @@ QFramelessHelper::QFramelessHelper(QWidget* w, bool resizeEnable, bool shadowBor
         {
             //we better left 1 piexl width of border untouch, so OS can draw nice shadow around it
             const MARGINS shadow = { 1, 1, 1, 1 };
-            DwmExtendFrameIntoClientArea(HWND(m_widget->winId()), &shadow);
+            typedef HRESULT (WINAPI* DwmExtendFrameIntoClientAreaPtr)(HWND hWnd, const MARGINS *pMarInset);
+            HMODULE module = LoadLibraryW(L"dwmapi.dll");
+            if (module)
+            {
+                DwmExtendFrameIntoClientAreaPtr dwm_extendframe_into_client_area_;
+                dwm_extendframe_into_client_area_= reinterpret_cast<DwmExtendFrameIntoClientAreaPtr>(GetProcAddress(module, "DwmExtendFrameIntoClientArea"));
+                if (dwm_extendframe_into_client_area_)
+                {
+                    dwm_extendframe_into_client_area_(HWND(m_widget->winId()), &shadow);
+                }
+            }
         }
     }
 #endif
@@ -464,7 +474,7 @@ bool QFramelessHelper::nativeEvent(const QByteArray &eventType, void *message, l
                 {
                     QPoint posInTitleBar = m_titleBar->mapFrom(m_widget, pos);
                     QWidget *child = m_titleBar->childAt(posInTitleBar);
-                    if (child == nullptr || !child->inherits("QAbstractButton"))
+                    if (child == 0 || !child->inherits("QAbstractButton"))
                     {
                         *result = HTCAPTION;
                         return true;

@@ -287,7 +287,7 @@ int QDrawShadowHelper::shadowSize()
 void QDrawShadowHelper::hide()
 {
     m_show = false;
-    QLayout* lay = nullptr;
+    QLayout* lay = 0;
     if (m_widget->inherits("QMainWindow")){
         QMainWindow* window = qobject_cast<QMainWindow*>(m_widget);
         lay = window->centralWidget()->layout();
@@ -301,7 +301,7 @@ void QDrawShadowHelper::hide()
 void QDrawShadowHelper::show()
 {
     m_show = true;
-    QLayout* lay = nullptr;
+    QLayout* lay = 0;
     if (m_widget->inherits("QMainWindow")){
         QMainWindow* window = qobject_cast<QMainWindow*>(m_widget);
         lay = window->centralWidget()->layout();
